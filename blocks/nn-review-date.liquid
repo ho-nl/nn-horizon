@@ -1,0 +1,104 @@
+{% doc %}
+  NN Review Date Block
+
+  Displays the date when the review was submitted.
+  Uses closest.metaobject.nn_reviews to access review data.
+
+  @example
+  Add this block inside a review card or any context with nn_reviews metaobject
+{% enddoc %}
+
+{% liquid
+  assign block_settings = block.settings
+  assign review = closest.metaobject.nn_reviews
+  assign submitted_at = review.submitted_at.value
+%}
+
+{% if submitted_at != blank %}
+  <time
+    class="nn-review-date size-style"
+    datetime="{{ submitted_at | date: '%Y-%m-%d' }}"
+    style="{% render 'size-style', settings: block_settings %}"
+    {{ block.shopify_attributes }}
+  >
+    {% case block_settings.format %}
+      {% when 'full' %}
+        {{ submitted_at | date: '%B %d, %Y' }}
+      {% when 'short' %}
+        {{ submitted_at | date: '%b %d, %Y' }}
+      {% when 'numeric' %}
+        {{ submitted_at | date: '%m/%d/%Y' }}
+      {% else %}
+        {{ submitted_at | date: '%B %d, %Y' }}
+    {% endcase %}
+  </time>
+{% endif %}
+
+{% stylesheet %}
+  .nn-review-date {
+    display: inline-block;
+    white-space: nowrap;
+    opacity: 0.7;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "NN Review Date",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Displays the submission date from a review metaobject. Add inside a NN Review Card or context with nn_reviews."
+    },
+    {
+      "type": "select",
+      "id": "format",
+      "label": "Date format",
+      "options": [
+        { "value": "full", "label": "Full (January 15, 2024)" },
+        { "value": "short", "label": "Short (Jan 15, 2024)" },
+        { "value": "numeric", "label": "Numeric (01/15/2024)" }
+      ],
+      "default": "full"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "select",
+      "id": "type_preset",
+      "label": "Preset",
+      "options": [
+        { "value": "paragraph", "label": "Paragraph" },
+        { "value": "h6", "label": "H6" }
+      ],
+      "default": "paragraph"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "options": [
+        { "value": "fit-content", "label": "Fit" },
+        { "value": "100%", "label": "Fill" }
+      ],
+      "default": "fit-content"
+    },
+    {
+      "type": "text_alignment",
+      "id": "alignment",
+      "label": "Alignment",
+      "default": "left",
+      "visible_if": "{{ block.settings.width != 'fit-content' }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "NN Review Date",
+      "category": "NN Review"
+    }
+  ]
+}
+{% endschema %}

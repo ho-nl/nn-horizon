@@ -1,0 +1,476 @@
+{% comment %}
+  NN Reviews Section
+
+  Displays product reviews using the resource-list snippet for flexible layouts.
+  Supports grid, carousel, bento, and editorial layouts with mobile carousel fallback.
+
+  @example
+  Add to product page template to display reviews
+{% endcomment %}
+
+{% liquid
+  # Get product from settings or closest context
+  assign review_product = section.settings.product
+  if review_product == blank
+    assign review_product = product
+  endif
+
+  assign all_reviews = review_product.metafields.near_native.reviews.value
+
+  # Parse URL parameters for pagination and sorting
+  assign review_page = 1
+  assign review_sort = ''
+
+  if request.path contains '/nn_reviews_sort='
+    assign sort_parts = request.path | split: '/nn_reviews_sort='
+    assign sort_value = sort_parts[1] | split: '&' | first | split: '#' | first
+    assign review_sort = sort_value
+
+    if request.path contains '&nn_reviews_page='
+      assign page_parts = request.path | split: '&nn_reviews_page='
+      assign page_value = page_parts[1] | split: '&' | first | split: '#' | first
+      assign review_page = page_value | plus: 0
+      if review_page < 1
+        assign review_page = 1
+      endif
+    endif
+  elsif request.path contains '/nn_reviews_page='
+    assign page_parts = request.path | split: '/nn_reviews_page='
+    assign page_value = page_parts[1] | split: '/' | first | split: '#' | first
+    assign review_page = page_value | plus: 0
+    if review_page < 1
+      assign review_page = 1
+    endif
+  endif
+
+  # Determine active sort order
+  assign active_sort = 'newest'
+  if review_sort != ''
+    assign active_sort = review_sort
+  endif
+
+  # Sort reviews
+  assign sorted_reviews = all_reviews
+  if active_sort == 'oldest'
+    assign sorted_reviews = all_reviews | sort: 'submitted_at.value'
+  elsif active_sort == 'newest'
+    assign sorted_reviews = all_reviews | sort: 'submitted_at.value' | reverse
+  elsif active_sort == 'highest_rating'
+    assign sorted_reviews = all_reviews | sort: 'rating.value' | reverse
+  elsif active_sort == 'lowest_rating'
+    assign sorted_reviews = all_reviews | sort: 'rating.value'
+  endif
+
+  # Pagination setup
+  assign reviews_per_page = section.settings.reviews_per_page | default: 10
+  assign current_page = review_page
+
+  # Count reviews
+  assign total_reviews = 0
+  for review in sorted_reviews
+    assign total_reviews = total_reviews | plus: 1
+  endfor
+
+  assign total_pages = total_reviews | divided_by: reviews_per_page
+  assign remainder = total_reviews | modulo: reviews_per_page
+  if remainder > 0
+    assign total_pages = total_pages | plus: 1
+  endif
+
+  assign start_index = current_page | minus: 1 | times: reviews_per_page
+
+  # Determine max items based on layout type
+  assign layout_type = section.settings.layout_type | default: 'grid'
+  if layout_type == 'bento'
+    assign max_display = 4
+    if reviews_per_page < max_display
+      assign max_display = reviews_per_page
+    endif
+  else
+    assign max_display = reviews_per_page
+  endif
+%}
+
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<div
+  id="nn-reviews"
+  data-testid="nn-reviews"
+  class="
+    section
+    section--{{ section.settings.section_width }}
+    color-{{ section.settings.color_scheme }}
+    section-resource-list
+    nn-reviews
+    spacing-style
+    gap-style
+  "
+  style="
+    {% render 'spacing-style', settings: section.settings %}
+    {% render 'gap-style', value: section.settings.gap %}
+  "
+>
+  <div class="section-resource-list__content">
+    {% comment %} Header block {% endcomment %}
+    {%- content_for 'block', type: '_nn-reviews-header', id: 'static-header', total_reviews: total_reviews -%}
+  </div>
+
+  {% if total_reviews > 0 %}
+    {% capture list_items %}
+      {% for review in sorted_reviews limit: max_display offset: start_index %}
+        <div class="resource-list__item">
+          {% # theme-check-disable UniqueStaticBlockId %}
+          {% content_for 'block', type: 'nn-review-card', id: 'static-review-card', closest.metaobject.nn_reviews: review %}
+          {% # theme-check-enable UniqueStaticBlockId %}
+        </div>
+        {% unless forloop.last %}
+          <!--@list/split-->
+        {% endunless %}
+      {% endfor %}
+    {% endcapture %}
+
+    {% liquid
+      # Create an array from the list items to be used for different layout types
+      assign list_items_array = list_items | strip | split: '<!--@list/split-->'
+      assign slide_count = list_items_array.size
+    %}
+
+    {% render 'resource-list',
+      list_items: list_items,
+      list_items_array: list_items_array,
+      settings: section.settings,
+      carousel_ref: 'nnReviews',
+      slide_count: slide_count,
+      content_type: 'reviews',
+      test_id: 'nn-reviews-list'
+    %}
+  {% else %}
+    <div class="nn-reviews__empty">
+      <p>{{ section.settings.no_reviews_text }}</p>
+    </div>
+  {% endif %}
+
+  {% comment %} Additional blocks (after reviews) {% endcomment %}
+  <div class="section-resource-list__content">
+    {%- content_for 'blocks' -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  /* Empty state */
+  .nn-reviews__empty {
+    text-align: center;
+    margin-block: var(--margin-xl);
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text));
+  }
+
+  /* Separator style support for list/grid layouts */
+  .nn-reviews .resource-list--grid .resource-list__item:has(.nn-review-card--separator) {
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: var(--resource-list-row-gap-desktop);
+  }
+
+  .nn-reviews .resource-list--grid .resource-list__item:has(.nn-review-card--separator):last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "NN Reviews List",
+  "class": "nn-reviews-section",
+  "tag": "section",
+  "blocks": [
+    { "type": "@theme" },
+    { "type": "@app" }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Product"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout_type",
+      "label": "Layout type",
+      "options": [
+        { "value": "grid", "label": "Grid" },
+        { "value": "carousel", "label": "Carousel" },
+        { "value": "bento", "label": "Bento" }
+      ],
+      "default": "grid"
+    },
+    {
+      "type": "checkbox",
+      "id": "carousel_on_mobile",
+      "label": "Carousel on mobile",
+      "default": false,
+      "visible_if": "{{ section.settings.layout_type != 'carousel' }}"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Columns",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 1,
+      "visible_if": "{{ section.settings.layout_type == 'grid' or section.settings.layout_type == 'carousel' }}"
+    },
+    {
+      "type": "select",
+      "id": "mobile_columns",
+      "label": "Mobile columns",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "1",
+      "visible_if": "{{ section.settings.layout_type == 'grid' and section.settings.carousel_on_mobile == false }}"
+    },
+    {
+      "type": "select",
+      "id": "mobile_card_size",
+      "label": "Mobile card size",
+      "options": [
+        { "value": "60cqw", "label": "Large (1 visible)" },
+        { "value": "44cqw", "label": "Small (2 visible)" }
+      ],
+      "default": "60cqw",
+      "visible_if": "{{ section.settings.layout_type == 'carousel' or section.settings.carousel_on_mobile == true }}"
+    },
+    {
+      "type": "range",
+      "id": "columns_gap",
+      "label": "Horizontal gap",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 16,
+      "visible_if": "{{ section.settings.layout_type == 'grid' or section.settings.layout_type == 'carousel' }}"
+    },
+    {
+      "type": "range",
+      "id": "bento_gap",
+      "label": "Gap",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 16,
+      "visible_if": "{{ section.settings.layout_type == 'bento' }}"
+    },
+    {
+      "type": "range",
+      "id": "rows_gap",
+      "label": "Vertical gap",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 16,
+      "visible_if": "{{ section.settings.layout_type == 'grid' }}"
+    },
+    {
+      "type": "header",
+      "content": "Carousel navigation",
+      "visible_if": "{{ section.settings.layout_type == 'carousel' or section.settings.carousel_on_mobile == true }}"
+    },
+    {
+      "type": "select",
+      "id": "icons_style",
+      "label": "Navigation icons",
+      "options": [
+        { "value": "arrow", "label": "Arrows" },
+        { "value": "chevron", "label": "Chevrons" },
+        { "value": "arrows_large", "label": "Large arrows" },
+        { "value": "chevron_large", "label": "Large chevrons" },
+        { "value": "none", "label": "None" }
+      ],
+      "default": "arrow",
+      "visible_if": "{{ section.settings.layout_type == 'carousel' or section.settings.carousel_on_mobile == true }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dots",
+      "label": "Show dots",
+      "default": false,
+      "visible_if": "{{ section.settings.layout_type == 'carousel' or section.settings.carousel_on_mobile == true }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_progress",
+      "label": "Show progress bar",
+      "default": false,
+      "visible_if": "{{ section.settings.layout_type == 'carousel' or section.settings.carousel_on_mobile == true }}"
+    },
+    {
+      "type": "header",
+      "content": "Pagination"
+    },
+    {
+      "type": "range",
+      "id": "reviews_per_page",
+      "min": 1,
+      "max": 50,
+      "step": 1,
+      "label": "Reviews per page",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "Empty state"
+    },
+    {
+      "type": "text",
+      "id": "no_reviews_text",
+      "label": "No reviews text",
+      "default": "No reviews yet. Be the first to review this product!"
+    },
+    {
+      "type": "header",
+      "content": "Section layout"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Width",
+      "options": [
+        { "value": "page-width", "label": "Page" },
+        { "value": "full-width", "label": "Full" }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "NN Reviews List",
+      "category": "NN Review",
+      "settings": {
+        "product": "{{ product }}",
+        "layout_type": "grid",
+        "columns": 1
+      },
+      "blocks": {
+        "static-header": {
+          "type": "_nn-reviews-header",
+          "static": true,
+          "blocks": {
+            "header-group": {
+              "type": "group",
+              "settings": {
+                "content_direction": "row",
+                "horizontal_alignment": "space-between",
+                "vertical_alignment": "center",
+                "padding-block-end": 30
+              },
+              "blocks": {
+                "rating-badge": {
+                  "type": "nn-reviews-rating-badge",
+                  "settings": {
+                    "product": "{{ product }}",
+                    "type_preset": "h3",
+                    "suffix": "for {{product.title}}"
+                  }
+                },
+                "form-button": {
+                  "type": "nn-reviews-form",
+                  "settings": {
+                    "product": "{{ product }}"
+                  }
+                }
+              },
+              "block_order": ["rating-badge", "form-button"]
+            }
+          },
+          "block_order": ["header-group"]
+        },
+        "static-review-card": {
+          "type": "nn-review-card",
+          "static": true,
+          "settings": {
+            "card_style": "separator"
+          },
+          "blocks": {
+            "header-group": {
+              "type": "group",
+              "settings": {
+                "content_direction": "row",
+                "vertical_alignment": "center",
+                "gap": 8
+              },
+              "blocks": {
+                "author": { "type": "nn-review-author" },
+                "rating": { "type": "nn-review-rating" },
+                "verified": { "type": "nn-review-verified" },
+                "date": { "type": "nn-review-date" }
+              },
+              "block_order": ["author", "rating", "verified", "date"]
+            },
+            "title": { "type": "nn-review-title" },
+            "body": { "type": "nn-review-body" },
+            "reply": { "type": "nn-review-reply" }
+          },
+          "block_order": ["header-group", "title", "body", "reply"]
+        },
+        "pagination-bottom": {
+          "type": "nn-reviews-pagination",
+          "settings": {
+            "product": "{{ product }}"
+          }
+        }
+      },
+      "block_order": ["pagination-bottom"]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,97 @@
+{% doc %}
+  NN Review Title Block
+
+  Displays the review title/headline.
+  Uses closest.metaobject.nn_reviews to access review data.
+
+  @example
+  Add this block inside a review card or any context with nn_reviews metaobject
+{% enddoc %}
+
+{% liquid
+  assign block_settings = block.settings
+  assign review = closest.metaobject.nn_reviews
+  assign title = review.title.value
+%}
+
+{% if title != blank %}
+  <{{ block_settings.heading_tag }}
+    class="nn-review-title {{ block_settings.type_preset }} size-style"
+    style="{% render 'size-style', settings: block_settings %}"
+    {{ block.shopify_attributes }}
+  >
+    {{ title }}
+  </{{ block_settings.heading_tag }}>
+{% endif %}
+
+{% stylesheet %}
+  .nn-review-title {
+    margin: 0;
+    font-weight: 600;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "NN Review Title",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Displays the title from a review metaobject. Add inside a NN Review Card or context with nn_reviews."
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading tag",
+      "options": [
+        { "value": "h3", "label": "H3" },
+        { "value": "h4", "label": "H4" },
+        { "value": "h5", "label": "H5" },
+        { "value": "h6", "label": "H6" },
+        { "value": "p", "label": "Paragraph" }
+      ],
+      "default": "h5"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "select",
+      "id": "type_preset",
+      "label": "Preset",
+      "options": [
+        { "value": "paragraph", "label": "Paragraph" },
+        { "value": "h4", "label": "H4" },
+        { "value": "h5", "label": "H5" },
+        { "value": "h6", "label": "H6" }
+      ],
+      "default": "h5"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "options": [
+        { "value": "fit-content", "label": "Fit" },
+        { "value": "100%", "label": "Fill" }
+      ],
+      "default": "100%"
+    },
+    {
+      "type": "text_alignment",
+      "id": "alignment",
+      "label": "Alignment",
+      "default": "left",
+      "visible_if": "{{ block.settings.width != 'fit-content' }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "NN Review Title",
+      "category": "NN Review"
+    }
+  ]
+}
+{% endschema %}

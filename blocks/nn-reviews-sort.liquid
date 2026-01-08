@@ -1,0 +1,185 @@
+{% doc %}
+  NN Reviews Sort Block
+
+  Displays a dropdown to sort reviews.
+  Should be placed in the header area of the NN Reviews List section.
+
+  @example
+  Add this block to allow users to sort reviews
+{% enddoc %}
+
+{% liquid
+  # Parse URL parameters
+  assign review_page = 1
+  assign review_sort = ''
+  assign review_base_path = request.path
+
+  if request.path contains '/nn_reviews_sort='
+    assign sort_parts = request.path | split: '/nn_reviews_sort='
+    assign sort_value = sort_parts[1] | split: '&' | first | split: '#' | first
+    assign review_sort = sort_value
+    assign review_base_path = sort_parts[0]
+
+    if request.path contains '&nn_reviews_page='
+      assign page_parts = request.path | split: '&nn_reviews_page='
+      assign page_value = page_parts[1] | split: '&' | first | split: '#' | first
+      assign review_page = page_value | plus: 0
+      if review_page < 1
+        assign review_page = 1
+      endif
+    endif
+  elsif request.path contains '/nn_reviews_page='
+    assign page_parts = request.path | split: '/nn_reviews_page='
+    assign page_value = page_parts[1] | split: '/' | first | split: '#' | first
+    assign review_page = page_value | plus: 0
+    if review_page < 1
+      assign review_page = 1
+    endif
+    assign review_base_path = page_parts[0]
+  endif
+
+  # Determine active sort order
+  assign active_sort = block.settings.default_sort
+  if review_sort != ''
+    assign active_sort = review_sort
+  endif
+%}
+
+<div class="nn-reviews-sort" {{ block.shopify_attributes }}>
+  <div class="nn-reviews-sort__container">
+    <label for="nn-reviews-sort-select-{{ block.id }}" class="nn-reviews-sort__label">
+      Sort by
+    </label>
+    <div class="nn-reviews-sort__select-wrapper">
+      <select
+        id="nn-reviews-sort-select-{{ block.id }}"
+        class="nn-reviews-sort__select"
+        data-nn-reviews-sort="{{ block.id }}"
+      >
+        <option value="newest" {% if active_sort == 'newest' %}selected{% endif %}>
+          Newest first
+        </option>
+        <option value="oldest" {% if active_sort == 'oldest' %}selected{% endif %}>
+          Oldest first
+        </option>
+        <option value="highest_rating" {% if active_sort == 'highest_rating' %}selected{% endif %}>
+          Highest rating
+        </option>
+        <option value="lowest_rating" {% if active_sort == 'lowest_rating' %}selected{% endif %}>
+          Lowest rating
+        </option>
+      </select>
+      <svg
+        aria-hidden="true"
+        focusable="false"
+        class="nn-reviews-sort__icon"
+        width="8"
+        height="13"
+        viewBox="0 0 8 13"
+      >
+        <path d="M4 0L0 4h8L4 0zM4 13l4-4H0l4 4z" fill="currentColor"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const select = document.querySelector('[data-nn-reviews-sort="{{ block.id }}"]');
+    const basePath = {{ review_base_path | json }};
+
+    if (select) {
+      select.addEventListener('change', function() {
+        const sortValue = this.value;
+        const newPath = basePath + '/nn_reviews_sort=' + sortValue;
+        window.location.href = newPath + '#nn-reviews';
+      });
+    }
+  })();
+</script>
+
+{% stylesheet %}
+  .nn-reviews-sort__container {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-sm, 1rem);
+    position: relative;
+  }
+
+  .nn-reviews-sort__label {
+    font-size: var(--font-paragraph--size, 0.875rem);
+    opacity: 0.6;
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  .nn-reviews-sort__select-wrapper {
+    display: flex;
+    position: relative;
+    border-radius: var(--border-radius-sm, 4px);
+    align-items: center;
+    overflow: clip;
+    padding: var(--padding-2xs, 0.5rem) var(--padding-xs, 0.75rem);
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.15);
+  }
+
+  .nn-reviews-sort__select-wrapper:has(:focus-visible) {
+    outline: 2px solid currentcolor;
+    outline-offset: 2px;
+  }
+
+  .nn-reviews-sort__select-wrapper:has(:focus-visible) .nn-reviews-sort__select {
+    outline: none;
+  }
+
+  .nn-reviews-sort__select {
+    appearance: none;
+    border: 0;
+    margin: 0;
+    cursor: pointer;
+    padding-inline-end: var(--padding-md, 1.5rem);
+    background: transparent;
+    color: currentColor;
+    font-size: var(--font-paragraph--size, 0.875rem);
+    font-family: inherit;
+  }
+
+  .nn-reviews-sort__icon {
+    position: absolute;
+    right: var(--padding-xs, 0.75rem);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 13px;
+    pointer-events: none;
+    color: currentColor;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "NN Reviews Sort",
+  "tag": null,
+  "settings": [
+    {
+      "type": "select",
+      "id": "default_sort",
+      "label": "Default sort order",
+      "options": [
+        { "value": "newest", "label": "Newest first" },
+        { "value": "oldest", "label": "Oldest first" },
+        { "value": "highest_rating", "label": "Highest rating" },
+        { "value": "lowest_rating", "label": "Lowest rating" }
+      ],
+      "default": "newest",
+      "info": "This will be overridden if the user selects a different sort order"
+    }
+  ],
+  "presets": [
+    {
+      "name": "NN Reviews Sort",
+      "category": "NN Review"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,138 @@
+{% doc %}
+  NN Review Merchant Reply Block
+
+  Displays the merchant's reply to a review.
+  Uses closest.metaobject.nn_reviews to access review data.
+
+  @example
+  Add this block inside a review card or any context with nn_reviews metaobject
+{% enddoc %}
+
+{% liquid
+  assign block_settings = block.settings
+  assign review = closest.metaobject.nn_reviews
+  assign reply = review.merchant_reply
+  assign replied_at = review.merchant_replied_at.value
+%}
+
+{% if reply != blank %}
+  <div
+    class="nn-review-reply"
+    style="
+      --nn-review-reply-padding: {{ block_settings.padding }}px;
+      --nn-review-reply-radius: {{ block_settings.border_radius }}px;
+    "
+    {{ block.shopify_attributes }}
+  >
+    {% if block_settings.show_label %}
+      <div class="nn-review-reply__label">
+        {{ block_settings.label_text }}
+      </div>
+    {% endif %}
+
+    <div class="nn-review-reply__content">
+      {{ reply | metafield_tag }}
+    </div>
+
+    {% if block_settings.show_date and replied_at != blank %}
+      <time
+        class="nn-review-reply__date"
+        datetime="{{ replied_at | date: '%Y-%m-%d' }}"
+      >
+        {{ replied_at | date: '%B %d, %Y' }}
+      </time>
+    {% endif %}
+  </div>
+{% endif %}
+
+{% stylesheet %}
+  .nn-review-reply {
+    margin-top: 1rem;
+    padding: var(--nn-review-reply-padding, 1rem);
+    background: color-mix(in srgb, currentColor 5%, transparent);
+    border-radius: var(--nn-review-reply-radius, 4px);
+    border-left: 3px solid var(--color-primary, currentColor);
+  }
+
+  .nn-review-reply__label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    opacity: 0.9;
+  }
+
+  .nn-review-reply__content {
+    line-height: 1.6;
+  }
+
+  .nn-review-reply__content p:last-child {
+    margin-bottom: 0;
+  }
+
+  .nn-review-reply__date {
+    display: block;
+    margin-top: 0.75rem;
+    font-size: 0.875em;
+    opacity: 0.6;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "NN Review Merchant Reply",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Displays the merchant reply from a review metaobject. Add inside a NN Review Card or context with nn_reviews."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_label",
+      "label": "Show label",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "label_text",
+      "label": "Label text",
+      "default": "Response from store:"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "Show reply date",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "label": "Padding",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 4
+    }
+  ],
+  "presets": [
+    {
+      "name": "NN Review Merchant Reply",
+      "category": "NN Review"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,313 @@
+{% doc %}
+  NN Reviews Pagination Block
+
+  Displays pagination controls for reviews.
+  Offers two styles: simple (Previous/Next with page info) or numbered (page numbers).
+
+  @example
+  Add this block to enable pagination for reviews
+{% enddoc %}
+
+{% liquid
+  assign review_product = block.settings.product | default: closest.product | default: product
+  assign all_reviews = review_product.metafields.near_native.reviews.value
+
+  # Parse URL parameters
+  assign review_page = 1
+  assign review_sort = ''
+
+  if request.path contains '/nn_reviews_sort='
+    assign sort_parts = request.path | split: '/nn_reviews_sort='
+    assign sort_value = sort_parts[1] | split: '&' | first | split: '#' | first
+    assign review_sort = sort_value
+
+    if request.path contains '&nn_reviews_page='
+      assign page_parts = request.path | split: '&nn_reviews_page='
+      assign page_value = page_parts[1] | split: '&' | first | split: '#' | first
+      assign review_page = page_value | plus: 0
+      if review_page < 1
+        assign review_page = 1
+      endif
+    endif
+  elsif request.path contains '/nn_reviews_page='
+    assign page_parts = request.path | split: '/nn_reviews_page='
+    assign page_value = page_parts[1] | split: '/' | first | split: '#' | first
+    assign review_page = page_value | plus: 0
+    if review_page < 1
+      assign review_page = 1
+    endif
+  endif
+
+  # Determine active sort order
+  assign active_sort = 'newest'
+  if review_sort != ''
+    assign active_sort = review_sort
+  endif
+
+  # Get reviews per page from settings
+  assign reviews_per_page = block.settings.reviews_per_page | default: 10
+  assign current_page = review_page
+
+  # Count reviews
+  assign total_reviews = 0
+  for review in all_reviews
+    assign total_reviews = total_reviews | plus: 1
+  endfor
+
+  assign total_pages = total_reviews | divided_by: reviews_per_page
+  assign remainder = total_reviews | modulo: reviews_per_page
+  if remainder > 0
+    assign total_pages = total_pages | plus: 1
+  endif
+
+  assign base_url = review_product.url
+  assign scroll_target = block.settings.scroll_target | default: 'nn-reviews'
+  assign style = block.settings.style | default: 'simple'
+%}
+
+{% if total_pages > 1 %}
+  <nav
+    class="nn-reviews-pagination nn-reviews-pagination--{{ style }}"
+    aria-label="Reviews pagination"
+    {{ block.shopify_attributes }}
+  >
+    {% if style == 'simple' %}
+      {%- comment -%} Simple style: Previous / Page X of Y / Next {%- endcomment -%}
+      {% if current_page > 1 %}
+        {% assign prev_page = current_page | minus: 1 %}
+        <a
+          href="{{ base_url }}/nn_reviews_sort={{ active_sort }}&nn_reviews_page={{ prev_page }}#{{ scroll_target }}"
+          class="nn-reviews-pagination__link nn-reviews-pagination__link--prev"
+          aria-label="Previous page"
+        >
+          &larr; Previous
+        </a>
+      {% endif %}
+
+      <span class="nn-reviews-pagination__info">
+        Page {{ current_page }} of {{ total_pages }}
+      </span>
+
+      {% if current_page < total_pages %}
+        {% assign next_page = current_page | plus: 1 %}
+        <a
+          href="{{ base_url }}/nn_reviews_sort={{ active_sort }}&nn_reviews_page={{ next_page }}#{{ scroll_target }}"
+          class="nn-reviews-pagination__link nn-reviews-pagination__link--next"
+          aria-label="Next page"
+        >
+          Next &rarr;
+        </a>
+      {% endif %}
+
+    {% else %}
+      {%- comment -%} Numbered style: < 1 2 3 4 5 > {%- endcomment -%}
+      <ul class="nn-reviews-pagination__list" role="list">
+        <li class="nn-reviews-pagination__item">
+          {% if current_page > 1 %}
+            {% assign prev_page = current_page | minus: 1 %}
+            <a
+              href="{{ base_url }}/nn_reviews_sort={{ active_sort }}&nn_reviews_page={{ prev_page }}#{{ scroll_target }}"
+              aria-label="Previous page"
+              class="nn-reviews-pagination__link nn-reviews-pagination__link--arrow"
+            >
+              <svg width="8" height="13" viewBox="0 0 8 13" fill="none">
+                <path d="M7 1L1 6.5L7 12" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </a>
+          {% else %}
+            <span
+              class="nn-reviews-pagination__link nn-reviews-pagination__link--arrow nn-reviews-pagination__link--disabled"
+              aria-disabled="true"
+            >
+              <svg width="8" height="13" viewBox="0 0 8 13" fill="none">
+                <path d="M7 1L1 6.5L7 12" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </span>
+          {% endif %}
+        </li>
+
+        {% for i in (1..total_pages) %}
+          <li class="nn-reviews-pagination__item">
+            {% if i == current_page %}
+              <span class="nn-reviews-pagination__link nn-reviews-pagination__link--current" aria-current="page">
+                {{ i }}
+              </span>
+            {% else %}
+              <a
+                href="{{ base_url }}/nn_reviews_sort={{ active_sort }}&nn_reviews_page={{ i }}#{{ scroll_target }}"
+                class="nn-reviews-pagination__link"
+                aria-label="Page {{ i }}"
+              >
+                {{ i }}
+              </a>
+            {% endif %}
+          </li>
+        {% endfor %}
+
+        <li class="nn-reviews-pagination__item">
+          {% if current_page < total_pages %}
+            {% assign next_page = current_page | plus: 1 %}
+            <a
+              href="{{ base_url }}/nn_reviews_sort={{ active_sort }}&nn_reviews_page={{ next_page }}#{{ scroll_target }}"
+              aria-label="Next page"
+              class="nn-reviews-pagination__link nn-reviews-pagination__link--arrow"
+            >
+              <svg width="8" height="13" viewBox="0 0 8 13" fill="none">
+                <path d="M1 1L7 6.5L1 12" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </a>
+          {% else %}
+            <span
+              class="nn-reviews-pagination__link nn-reviews-pagination__link--arrow nn-reviews-pagination__link--disabled"
+              aria-disabled="true"
+            >
+              <svg width="8" height="13" viewBox="0 0 8 13" fill="none">
+                <path d="M1 1L7 6.5L1 12" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </span>
+          {% endif %}
+        </li>
+      </ul>
+    {% endif %}
+  </nav>
+{% endif %}
+
+{% stylesheet %}
+  .nn-reviews-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--gap-md, 1rem);
+    padding: var(--padding-md, 1rem) 0;
+  }
+
+  /* Simple style */
+  .nn-reviews-pagination--simple .nn-reviews-pagination__link {
+    color: var(--color-foreground);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .nn-reviews-pagination--simple .nn-reviews-pagination__link:hover {
+    opacity: 0.7;
+  }
+
+  .nn-reviews-pagination--simple .nn-reviews-pagination__info {
+    opacity: 0.6;
+  }
+
+  /* Numbered style */
+  .nn-reviews-pagination--numbered {
+    --pagination-size: 48px;
+  }
+
+  .nn-reviews-pagination__list {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--gap-2xs, 0.5rem);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nn-reviews-pagination__item {
+    display: grid;
+    place-items: center;
+  }
+
+  .nn-reviews-pagination--numbered .nn-reviews-pagination__link {
+    display: grid;
+    place-items: center;
+    width: var(--pagination-size);
+    height: var(--pagination-size);
+    border-radius: var(--border-radius-sm, 8px);
+    text-decoration: none;
+    color: currentColor;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .nn-reviews-pagination--numbered .nn-reviews-pagination__link:hover:not(.nn-reviews-pagination__link--disabled) {
+    background: rgb(var(--color-foreground-rgb) / 0.1);
+  }
+
+  .nn-reviews-pagination__link--current {
+    font-weight: 600;
+    background: var(--color-foreground) !important;
+    color: var(--color-background) !important;
+  }
+
+  .nn-reviews-pagination__link--arrow {
+    width: var(--pagination-size);
+    height: var(--pagination-size);
+  }
+
+  .nn-reviews-pagination__link--arrow svg {
+    width: 8px;
+    height: 13px;
+  }
+
+  .nn-reviews-pagination__link--disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  @media screen and (max-width: 749px) {
+    .nn-reviews-pagination--numbered {
+      --pagination-size: 44px;
+    }
+
+    .nn-reviews-pagination--numbered .nn-reviews-pagination__link {
+      font-size: var(--font-paragraph--size, 0.875rem);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "NN Reviews Pagination",
+  "tag": null,
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Product",
+      "info": "Leave empty to use the current product context"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "options": [
+        { "value": "simple", "label": "Simple (Previous / Next)" },
+        { "value": "numbered", "label": "Numbered (1 2 3...)" }
+      ],
+      "default": "simple"
+    },
+    {
+      "type": "range",
+      "id": "reviews_per_page",
+      "min": 1,
+      "max": 50,
+      "step": 1,
+      "label": "Reviews per page",
+      "default": 10,
+      "info": "Must match the setting in the NN Reviews List section"
+    },
+    {
+      "type": "text",
+      "id": "scroll_target",
+      "label": "Scroll target ID",
+      "default": "nn-reviews",
+      "info": "The element ID to scroll to when navigating pages"
+    }
+  ],
+  "presets": [
+    {
+      "name": "NN Reviews Pagination",
+      "category": "NN Review"
+    }
+  ]
+}
+{% endschema %}

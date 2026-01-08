@@ -1,0 +1,48 @@
+{% comment %}
+  NN Reviews - Rating Badge Snippet
+
+  A reusable rating badge component that displays stars, rating value, and review count.
+
+  Parameters:
+  - rating: The rating value (e.g., 4.5)
+  - count: The number of reviews
+  - scale_max: Maximum rating scale (default: 5)
+  - star_color: Color of stars (default: #ffc107)
+  - show_stars: Whether to show the stars (default: true)
+  - show_rating_value: Whether to show the rating number (default: true)
+  - show_count: Whether to show review count (default: true)
+  - preset: Typography preset class (e.g., 'h1', 'h2', 'paragraph')
+  - hide_when_empty: Whether to hide the badge when there are no reviews (default: false)
+{% endcomment %}
+
+{% assign star_color = star_color | default: '#ffc107' %}
+{% assign scale_max = scale_max | default: 5 %}
+{% assign rating = rating | default: 0 %}
+{% assign count = count | default: 0 %}
+
+{% if count > 0 or hide_when_empty == false %}
+  <div class="nn-rating-badge {{ preset }}">
+    {% if show_stars == true %}
+      {% render 'nn-rating-stars', rating: rating, scale_max: scale_max, star_color: star_color %}
+    {% endif %}
+
+    {% if show_rating_value == true and count > 0 %}
+      <span class="nn-rating-badge__value">
+        {{- rating -}}
+        <span class="nn-rating-badge__max">/{{ scale_max }}</span></span
+      >
+    {% endif %}
+
+    {% if show_count == true %}
+      <span class="nn-rating-badge__count">
+        {%- if count == 0 -%}
+          No reviews
+        {%- elsif count == 1 -%}
+          {{- count }} review
+        {%- else -%}
+          {{- count }} reviews
+        {%- endif -%}
+      </span>
+    {% endif %}
+  </div>
+{% endif %}

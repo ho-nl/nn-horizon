@@ -1,0 +1,198 @@
+{% doc %}
+  NN Review Card Block
+
+  Container block for individual review items. Renders child blocks for
+  each review component (author, rating, date, title, body, reply).
+
+  The review metaobject is accessed via closest.metaobject.nn_reviews which is
+  passed from the parent section.
+
+  @example
+  {% content_for 'block', type: 'nn-review-card', id: 'static-review-card', closest.metaobject.nn_reviews: review %}
+{% enddoc %}
+
+{% liquid
+  assign block_settings = block.settings
+  assign card_style = block_settings.card_style | default: 'borderless'
+%}
+
+{% capture children %}
+  {% content_for 'blocks', closest.metaobject.nn_reviews: closest.metaobject.nn_reviews %}
+{% endcapture %}
+
+<div
+  class="
+    nn-review-card
+    nn-review-card--{{ card_style }}
+    spacing-style
+    {% if block_settings.inherit_color_scheme == false %}color-{{ block_settings.color_scheme }}{% endif %}
+  "
+  data-block-id="{{ block.id }}"
+  data-testid="nn-review-card"
+  style="
+    {% render 'spacing-style', settings: block_settings %}
+    --nn-review-card-gap: {{ block_settings.gap }}px;
+    --nn-review-card-border-radius: {{ block_settings.border_radius }}px;
+  "
+  {{ block.shopify_attributes }}
+>
+  {{ children }}
+</div>
+
+{% stylesheet %}
+  .nn-review-card {
+    --nn-review-card-padding: var(--padding-md, 1.5rem);
+    display: flex;
+    flex-direction: column;
+    gap: var(--nn-review-card-gap, 12px);
+  }
+
+  /* Bordered card style */
+  .nn-review-card--bordered {
+    padding: var(--nn-review-card-padding);
+    border: 1px solid var(--color-border);
+    border-radius: var(--nn-review-card-border-radius, var(--border-radius-md, 8px));
+  }
+
+  /* Borderless card style */
+  .nn-review-card--borderless {
+    padding: 0;
+    border: none;
+    border-radius: 0;
+  }
+
+  /* Separator style - border handled by parent list */
+  .nn-review-card--separator {
+    padding: 0;
+    border: none;
+    border-radius: 0;
+  }
+
+  .nn-review-card__header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "NN Review Card",
+  "tag": null,
+  "blocks": [
+    { "type": "@theme" },
+    { "type": "@app" }
+  ],
+  "presets": [
+    {
+      "name": "NN Review Card",
+      "category": "NN Review"
+    }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Card style"
+    },
+    {
+      "type": "select",
+      "id": "card_style",
+      "label": "Style",
+      "options": [
+        { "value": "bordered", "label": "Bordered" },
+        { "value": "separator", "label": "Separator" },
+        { "value": "borderless", "label": "Borderless" }
+      ],
+      "default": "borderless",
+      "info": "Bordered: Card with padding, border and rounded corners. Separator: Horizontal lines between items (best in list layout). Borderless: No borders or extra padding."
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 8,
+      "visible_if": "{{ block.settings.card_style == 'bordered' }}"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Vertical gap",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_color_scheme",
+      "label": "Inherit color scheme",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "Left",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "Right",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ]
+}
+{% endschema %}

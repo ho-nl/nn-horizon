@@ -1,0 +1,24 @@
+{% doc %}
+  NN Reviews Header Block
+
+  A container block for the header area of the NN Reviews section.
+  Add any blocks inside (headings, buttons, filters, etc.)
+
+  @example
+  {% content_for 'block', type: '_nn-reviews-header', id: 'static-header' %}
+{% enddoc %}
+
+{% content_for 'blocks' %}
+
+{% schema %}
+{
+  "name": "NN Reviews Header",
+  "tag": null,
+  "blocks": [
+    { "type": "@theme" },
+    { "type": "@app" },
+    { "type": "_divider" }
+  ],
+  "settings": []
+}
+{% endschema %}

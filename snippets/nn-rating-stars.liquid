@@ -1,0 +1,38 @@
+{% comment %}
+  NN Reviews - Rating Stars Snippet
+
+  Reusable snippet for rendering star ratings with fractional support.
+
+  Parameters:
+    - rating: The rating value (e.g., 3.5)
+    - scale_max: Maximum rating scale / number of stars (default: 5)
+    - star_color: Color for filled stars (default: #ffc107)
+{% endcomment %}
+
+{% assign rating_number = rating | times: 1 %}
+{% assign rating_floor = rating_number | floor %}
+{% assign rating_next = rating_floor | plus: 1 %}
+{% assign star_color = star_color | default: '#ffc107' %}
+{% assign scale_max = scale_max | default: 5 | times: 1 %}
+
+<span class="nn-rating-stars" style="--star-color: {{ star_color }};">
+  {% for i in (1..10) %}
+    {% if i > scale_max %}{% break %}{% endif %}
+    {% if i <= rating_floor %}
+      <span class="nn-rating-stars__star nn-rating-stars__star--filled">★</span>
+    {% elsif i == rating_next %}
+      {% if rating_number != rating_floor %}
+        {% assign decimal_part = rating_number | minus: rating_floor %}
+        {% assign fill_range = decimal_part | times: 70 %}
+        {% assign fill_percent = fill_range | plus: 15 | round %}
+        <span class="nn-rating-stars__star nn-rating-stars__star--partial" style="--fill-percent: {{ fill_percent }}%;"
+          >★</span
+        >
+      {% else %}
+        <span class="nn-rating-stars__star">★</span>
+      {% endif %}
+    {% else %}
+      <span class="nn-rating-stars__star">★</span>
+    {% endif %}
+  {% endfor %}
+</span>

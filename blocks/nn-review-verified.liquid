@@ -1,0 +1,155 @@
+{% doc %}
+  NN Review Verified Badge Block
+
+  Displays a verification badge for verified buyers or reviewers.
+  Uses closest.metaobject.nn_reviews to access review data.
+
+  @example
+  Add this block inside a review card or any context with nn_reviews metaobject
+{% enddoc %}
+
+{% liquid
+  assign block_settings = block.settings
+  assign review = closest.metaobject.nn_reviews
+
+  assign is_verified_buyer = false
+  assign is_verified_reviewer = false
+
+  if review.order.value != blank
+    assign is_verified_buyer = true
+  elsif review.author.value != blank
+    assign is_verified_reviewer = true
+  endif
+%}
+
+{% if is_verified_buyer or is_verified_reviewer %}
+  <span
+    class="nn-review-verified nn-review-verified--{{ block_settings.style }} size-style"
+    style="{% render 'size-style', settings: block_settings %}"
+    {{ block.shopify_attributes }}
+  >
+    {% if block_settings.show_icon %}
+      <svg class="nn-review-verified__icon" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    {% else %}
+      <span class="nn-review-verified__checkmark">✓</span>
+    {% endif %}
+    {% if is_verified_buyer %}
+      {{ block_settings.verified_buyer_text }}
+    {% else %}
+      {{ block_settings.verified_reviewer_text }}
+    {% endif %}
+  </span>
+{% endif %}
+
+{% stylesheet %}
+  .nn-review-verified {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .nn-review-verified--success {
+    color: var(--color-success, #2ecc71);
+  }
+
+  .nn-review-verified--primary {
+    color: var(--color-primary);
+  }
+
+  .nn-review-verified--foreground {
+    color: var(--color-foreground);
+    opacity: 0.8;
+  }
+
+  .nn-review-verified__icon {
+    flex-shrink: 0;
+  }
+
+  .nn-review-verified__checkmark {
+    font-size: 0.9em;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "NN Review Verified Badge",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Displays a verified buyer/reviewer badge. Add inside a NN Review Card or context with nn_reviews."
+    },
+    {
+      "type": "text",
+      "id": "verified_buyer_text",
+      "label": "Verified buyer text",
+      "default": "Verified Buyer"
+    },
+    {
+      "type": "text",
+      "id": "verified_reviewer_text",
+      "label": "Verified reviewer text",
+      "default": "Verified Reviewer"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_icon",
+      "label": "Show icon",
+      "default": true,
+      "info": "Show checkmark icon instead of text character"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "options": [
+        { "value": "success", "label": "Success (green)" },
+        { "value": "primary", "label": "Primary" },
+        { "value": "foreground", "label": "Text" }
+      ],
+      "default": "success"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "select",
+      "id": "type_preset",
+      "label": "Preset",
+      "options": [
+        { "value": "paragraph", "label": "Paragraph" },
+        { "value": "h6", "label": "H6" }
+      ],
+      "default": "paragraph"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "options": [
+        { "value": "fit-content", "label": "Fit" },
+        { "value": "100%", "label": "Fill" }
+      ],
+      "default": "fit-content"
+    },
+    {
+      "type": "text_alignment",
+      "id": "alignment",
+      "label": "Alignment",
+      "default": "left",
+      "visible_if": "{{ block.settings.width != 'fit-content' }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "NN Review Verified Badge",
+      "category": "NN Review"
+    }
+  ]
+}
+{% endschema %}

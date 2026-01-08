@@ -1,0 +1,230 @@
+{% doc %}
+  NN Review Rating Block
+
+  Displays star rating for a review using SVG stars with fractional support.
+  Uses closest.metaobject.nn_reviews to access review data.
+
+  @example
+  Add this block inside a review card or any context with nn_reviews metaobject
+{% enddoc %}
+
+{% liquid
+  assign block_settings = block.settings
+  assign review = closest.metaobject.nn_reviews
+  assign rating = review.rating.value | times: 1
+  assign scale_max = block_settings.scale_max | default: 5
+
+  # Calculate star fill levels
+  assign rating_floor = rating | floor
+  assign decimal = rating | modulo: 1
+  assign decimal_rating = 0
+
+  if decimal >= 0.3 and decimal <= 0.7
+    assign decimal_rating = 0.5
+  elsif decimal > 0.7
+    assign decimal_rating = 1
+  endif
+
+  assign decimal_rounded = decimal_rating | ceil
+  assign svg_filled_stars = rating_floor | plus: decimal_rounded
+%}
+
+{% if rating != blank %}
+  <div
+    class="nn-review-rating rating-color--{{ block_settings.rating_color }} justify-{{ block_settings.alignment }} size-style"
+    style="{% render 'size-style', settings: block_settings %}"
+    {{ block.shopify_attributes }}
+  >
+    <svg
+      class="visually-hidden"
+      style="width: 0; height: 0;"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 32 32"
+      role="presentation"
+    >
+      <defs>
+        <linearGradient id="nn-half-{{ block.id }}" x1="0" x2="100%" y1="0" y2="0">
+          <stop offset="50%" stop-color="var(--star-fill-color)"></stop>
+          <stop offset="50%" stop-color="{% if block_settings.stars_style == 'outline' %}transparent{% else %}rgb(var(--star-fill-color-rgb) / var(--opacity-20)){% endif %}"></stop>
+        </linearGradient>
+
+        <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" id="nn-star-{{ block.id }}">
+          <path d="M31.547 12a.848.848 0 00-.677-.577l-9.427-1.376-4.224-8.532a.847.847 0 00-1.516 0l-4.218 8.534-9.427 1.355a.847.847 0 00-.467 1.467l6.823 6.664-1.612 9.375a.847.847 0 001.23.893l8.428-4.434 8.432 4.432a.847.847 0 001.229-.894l-1.615-9.373 6.822-6.665a.845.845 0 00.214-.869z" />
+        </symbol>
+      </defs>
+    </svg>
+
+    <div
+      class="nn-review-rating__stars"
+      style="--star-size: calc(var(--font-{{ block_settings.type_preset }}--size, 1rem) * 1.1);"
+      aria-label="{{ 'accessibility.rating' | t: rating: rating }}"
+    >
+      {% if block_settings.stars_style == 'single' %}
+        <svg
+          class="nn-review-rating__star {% if svg_filled_stars > 0 %}nn-review-rating__star--filled{% endif %}"
+          viewBox="0 0 32 32"
+          style="--empty-star-fill-color: rgb(var(--star-fill-color-rgb) / var(--opacity-20))"
+          role="presentation"
+        >
+          <use xlink:href="#nn-star-{{ block.id }}"></use>
+        </svg>
+      {% else %}
+        {%- for star in (1..scale_max) -%}
+          <svg
+            class="nn-review-rating__star {% if star <= svg_filled_stars %}nn-review-rating__star--filled{% endif %}"
+            viewBox="0 0 32 32"
+            style="--empty-star-fill-color: {% if block_settings.stars_style == 'outline' %}transparent{% else %}rgb(var(--star-fill-color-rgb) / var(--opacity-20)){% endif %}"
+            role="presentation"
+          >
+            <use xlink:href="#nn-star-{{ block.id }}"{% if decimal_rating == 0.5 and star == svg_filled_stars %} fill="url(#nn-half-{{ block.id }})"{% endif %}></use>
+            {% if block_settings.stars_style == 'outline' %}
+              <use xlink:href="#nn-star-{{ block.id }}" fill="none" stroke="var(--star-fill-color)" stroke-width="var(--icon-stroke-width, 2)"></use>
+            {% endif %}
+          </svg>
+        {%- endfor -%}
+      {% endif %}
+    </div>
+
+    {% if block_settings.show_number %}
+      <span class="nn-review-rating__number {{ block_settings.type_preset }}">
+        {% if block_settings.stars_style == 'single' %}
+          <span aria-hidden="true">{{ rating | round: 1 }}</span>
+        {% endif %}
+      </span>
+    {% endif %}
+  </div>
+{% endif %}
+
+{% stylesheet %}
+  .nn-review-rating {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-xs);
+    min-width: fit-content;
+  }
+
+  .rating-color--primary {
+    --star-fill-color: var(--color-primary);
+    --star-fill-color-rgb: var(--color-primary-rgb);
+  }
+
+  .rating-color--foreground {
+    --star-fill-color: var(--color-foreground);
+    --star-fill-color-rgb: var(--color-foreground-rgb);
+  }
+
+  .rating-color--gold {
+    --star-fill-color: #ffc107;
+    --star-fill-color-rgb: 255 193 7;
+  }
+
+  .nn-review-rating__stars {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-3xs, 2px);
+  }
+
+  .nn-review-rating__star {
+    height: var(--star-size, 1rem);
+    width: var(--star-size, 1rem);
+    fill: var(--empty-star-fill-color);
+  }
+
+  .nn-review-rating__star--filled {
+    fill: var(--star-fill-color);
+  }
+
+  .nn-review-rating__number {
+    color: var(--star-fill-color);
+    margin: 0;
+    white-space: nowrap;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "NN Review Rating",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Displays the star rating from a review metaobject. Add inside a NN Review Card or context with nn_reviews."
+    },
+    {
+      "type": "select",
+      "id": "stars_style",
+      "label": "Style",
+      "options": [
+        { "value": "outline", "label": "Outline" },
+        { "value": "shaded", "label": "Shaded" },
+        { "value": "single", "label": "Single" }
+      ],
+      "default": "shaded"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_number",
+      "label": "Show rating number",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "scale_max",
+      "label": "Maximum stars",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "select",
+      "id": "rating_color",
+      "label": "Color",
+      "options": [
+        { "value": "foreground", "label": "Text" },
+        { "value": "primary", "label": "Link" },
+        { "value": "gold", "label": "Gold" }
+      ],
+      "default": "gold"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "select",
+      "id": "type_preset",
+      "label": "Preset",
+      "options": [
+        { "value": "paragraph", "label": "Paragraph" },
+        { "value": "h5", "label": "H5" },
+        { "value": "h6", "label": "H6" }
+      ],
+      "default": "paragraph"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "options": [
+        { "value": "fit-content", "label": "Fit" },
+        { "value": "100%", "label": "Fill" }
+      ],
+      "default": "fit-content"
+    },
+    {
+      "type": "text_alignment",
+      "id": "alignment",
+      "label": "Alignment",
+      "default": "left",
+      "visible_if": "{{ block.settings.width != 'fit-content' }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "NN Review Rating",
+      "category": "NN Review"
+    }
+  ]
+}
+{% endschema %}

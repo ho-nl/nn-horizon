@@ -1,0 +1,185 @@
+{% doc %}
+  NN Reviews Rating Badge Block
+
+  A compact rating display showing stars, rating value, and review count.
+  Uses closest.product or block.settings.product for data source.
+
+  @example
+  Add this block to display a product's average rating
+{% enddoc %}
+
+{% liquid
+  assign target_product = block.settings.product | default: closest.product | default: product
+  assign rating = target_product.metafields.near_native.review_rating.value
+  assign count = target_product.metafields.near_native.review_rating_count.value
+
+  # Build suffix text with product name placeholder
+  assign suffix_text = block.settings.suffix
+  if suffix_text != blank and suffix_text contains '{{product.title}}'
+    assign suffix_text = suffix_text | replace: '{{product.title}}', target_product.title
+  endif
+%}
+
+<div
+  class="nn-reviews-rating-badge size-style {{ block.settings.type_preset }}"
+  style="{% render 'size-style', settings: block.settings %}"
+  {{ block.shopify_attributes }}
+>
+  {% render 'nn-rating-badge',
+    rating: rating,
+    count: count,
+    star_color: block.settings.star_color,
+    show_stars: block.settings.show_stars,
+    show_rating_value: block.settings.show_rating_value,
+    show_count: block.settings.show_count,
+    preset: block.settings.type_preset,
+    hide_when_empty: block.settings.hide_when_empty
+  %}
+  {% if suffix_text != blank %}
+    <span class="nn-reviews-rating-badge__suffix">{{ suffix_text }}</span>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .nn-reviews-rating-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .nn-rating-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .nn-rating-badge__value {
+    white-space: nowrap;
+  }
+
+  .nn-rating-badge__count {
+    white-space: nowrap;
+  }
+
+  .nn-rating-stars {
+    display: inline-flex;
+    gap: 0.125rem;
+    line-height: 1;
+  }
+
+  .nn-rating-stars__star {
+    font-size: 1em;
+    line-height: 1;
+  }
+
+  .nn-rating-stars__star--filled {
+    color: var(--star-color, #ffc107);
+  }
+
+  .nn-rating-stars__star--partial {
+    position: relative;
+  }
+
+  .nn-rating-stars__star--partial::before {
+    content: '★';
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--star-color, #ffc107);
+    clip-path: inset(0 calc(100% - var(--fill-percent, 50%)) 0 0);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "NN Reviews Rating Badge",
+  "tag": null,
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Product",
+      "info": "Leave empty to use the current product context"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_when_empty",
+      "label": "Hide when no reviews",
+      "default": false,
+      "info": "When disabled, shows empty stars for products without reviews"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stars",
+      "label": "Show stars",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating_value",
+      "label": "Show rating value",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_count",
+      "label": "Show review count",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "suffix",
+      "label": "Suffix text",
+      "info": "Text to display after the rating. Use {{product.title}} for the product name.",
+      "placeholder": "for {{ closest.product.title }}"
+    },
+    {
+      "type": "color",
+      "id": "star_color",
+      "label": "Star color",
+      "default": "#ffc107"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "select",
+      "id": "type_preset",
+      "label": "Preset",
+      "options": [
+        { "value": "paragraph", "label": "Paragraph" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h4", "label": "H4" },
+        { "value": "h5", "label": "H5" },
+        { "value": "h6", "label": "H6" }
+      ],
+      "default": "paragraph"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "options": [
+        { "value": "fit-content", "label": "Fit" },
+        { "value": "100%", "label": "Fill" }
+      ],
+      "default": "fit-content"
+    },
+    {
+      "type": "text_alignment",
+      "id": "alignment",
+      "label": "Alignment",
+      "default": "left",
+      "visible_if": "{{ block.settings.width != 'fit-content' }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "NN Reviews Rating Badge",
+      "category": "NN Review"
+    }
+  ]
+}
+{% endschema %}

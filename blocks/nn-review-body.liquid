@@ -1,0 +1,175 @@
+{% doc %}
+  NN Review Body Block
+
+  Displays the review body content with expand/collapse functionality.
+  Uses closest.metaobject.nn_reviews to access review data.
+
+  @example
+  Add this block inside a review card or any context with nn_reviews metaobject
+{% enddoc %}
+
+{% liquid
+  assign block_settings = block.settings
+  assign review = closest.metaobject.nn_reviews
+  assign body = review.body
+  assign max_lines = block_settings.max_lines | default: 4
+%}
+
+{% if body != blank %}
+  <div
+    class="nn-review-body-wrapper"
+    style="--max-lines: {{ max_lines }};"
+    data-nn-review-body-wrapper="{{ block.id }}"
+    {{ block.shopify_attributes }}
+  >
+    <div class="nn-review-body nn-review-body--collapsed" data-nn-review-body>
+      {{ body | metafield_tag }}
+    </div>
+    <button
+      class="nn-review-body__toggle"
+      data-nn-review-body-toggle
+      data-read-more="{{ block_settings.read_more_text }}"
+      data-read-less="{{ block_settings.read_less_text }}"
+      type="button"
+      aria-expanded="false"
+    >
+      {{ block_settings.read_more_text }}
+    </button>
+  </div>
+
+  <script>
+    (function() {
+      const wrapper = document.querySelector('[data-nn-review-body-wrapper="{{ block.id }}"]');
+      if (!wrapper) return;
+
+      const body = wrapper.querySelector('[data-nn-review-body]');
+      const button = wrapper.querySelector('[data-nn-review-body-toggle]');
+      if (!body || !button) return;
+
+      const readMoreText = button.dataset.readMore;
+      const readLessText = button.dataset.readLess;
+
+      function checkOverflow() {
+        if (body.scrollHeight > body.clientHeight) {
+          button.classList.add('nn-review-body__toggle--visible');
+        } else {
+          button.classList.remove('nn-review-body__toggle--visible');
+        }
+      }
+
+      // Initial check after fonts load
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(checkOverflow);
+      } else {
+        setTimeout(checkOverflow, 100);
+      }
+
+      // Re-check on resize
+      let resizeTimeout;
+      window.addEventListener('resize', function() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(checkOverflow, 100);
+      });
+
+      button.addEventListener('click', function(e) {
+        e.preventDefault();
+        const isCollapsed = body.classList.contains('nn-review-body--collapsed');
+
+        if (isCollapsed) {
+          body.classList.remove('nn-review-body--collapsed');
+          button.textContent = readLessText;
+          button.setAttribute('aria-expanded', 'true');
+        } else {
+          body.classList.add('nn-review-body--collapsed');
+          button.textContent = readMoreText;
+          button.setAttribute('aria-expanded', 'false');
+        }
+      });
+    })();
+  </script>
+{% endif %}
+
+{% stylesheet %}
+  .nn-review-body-wrapper {
+    position: relative;
+  }
+
+  .nn-review-body {
+    line-height: 1.6;
+  }
+
+  .nn-review-body--collapsed {
+    max-height: calc(var(--max-lines, 4) * 1lh);
+    overflow: hidden;
+    mask-image: linear-gradient(to bottom, black calc((var(--max-lines, 4) - 1) * 1lh), transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black calc((var(--max-lines, 4) - 1) * 1lh), transparent 100%);
+  }
+
+  .nn-review-body__toggle {
+    background: none;
+    border: none;
+    color: var(--color-primary, currentColor);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    cursor: pointer;
+    padding: 0;
+    margin-top: 0.5rem;
+    font-size: inherit;
+    font-family: inherit;
+    display: none;
+  }
+
+  .nn-review-body__toggle--visible {
+    display: inline-block;
+  }
+
+  .nn-review-body__toggle:hover {
+    opacity: 0.8;
+  }
+
+  .nn-review-body__toggle:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "NN Review Body",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Displays the body text from a review metaobject with expand/collapse. Add inside a NN Review Card or context with nn_reviews."
+    },
+    {
+      "type": "range",
+      "id": "max_lines",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "label": "Maximum lines before collapse",
+      "default": 4,
+      "info": "Number of lines to show before 'Read more' button appears"
+    },
+    {
+      "type": "text",
+      "id": "read_more_text",
+      "label": "Read more text",
+      "default": "Read more"
+    },
+    {
+      "type": "text",
+      "id": "read_less_text",
+      "label": "Read less text",
+      "default": "Read less"
+    }
+  ],
+  "presets": [
+    {
+      "name": "NN Review Body",
+      "category": "NN Review"
+    }
+  ]
+}
+{% endschema %}
