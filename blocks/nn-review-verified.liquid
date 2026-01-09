@@ -23,45 +23,48 @@
 %}
 
 {% if is_verified_buyer or is_verified_reviewer %}
-  <span
-    class="nn-review-verified nn-review-verified--{{ block_settings.style }} size-style"
-    style="{% render 'size-style', settings: block_settings %}"
+  <div
+    class="nn-review-verified nn-review-verified--{{ block_settings.style }} {{ block_settings.type_preset }}"
+    style="{% render 'typography-style', settings: block_settings %}"
     {{ block.shopify_attributes }}
   >
-    {% if block_settings.show_icon %}
-      <svg class="nn-review-verified__icon" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    {% else %}
-      <span class="nn-review-verified__checkmark">✓</span>
-    {% endif %}
-    {% if is_verified_buyer %}
-      {{ block_settings.verified_buyer_text }}
-    {% else %}
-      {{ block_settings.verified_reviewer_text }}
-    {% endif %}
-  </span>
+    {% case block_settings.icon_style %}
+      {% when 'icon' %}
+        <svg class="nn-review-verified__icon" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      {% when 'checkmark' %}
+        <span class="nn-review-verified__checkmark">✓</span>
+    {% endcase %}
+    <span class="nn-review-verified__text">
+      {% if is_verified_buyer %}
+        {{ block_settings.verified_buyer_text }}
+      {% else %}
+        {{ block_settings.verified_reviewer_text }}
+      {% endif %}
+    </span>
+  </div>
 {% endif %}
 
 {% stylesheet %}
   .nn-review-verified {
-    display: inline-flex;
+    display: flex;
+    flex-direction: row;
     align-items: center;
-    gap: 0.25rem;
-    font-weight: 500;
-    white-space: nowrap;
+    gap: 0.25em;
+    width: fit-content;
   }
 
   .nn-review-verified--success {
-    color: var(--color-success, #2ecc71);
+    color: var(--color-success, #2ecc71) !important;
   }
 
   .nn-review-verified--primary {
-    color: var(--color-primary);
+    color: var(--color-primary) !important;
   }
 
   .nn-review-verified--foreground {
-    color: var(--color-foreground);
+    color: var(--color-foreground) !important;
     opacity: 0.8;
   }
 
@@ -70,7 +73,12 @@
   }
 
   .nn-review-verified__checkmark {
+    flex-shrink: 0;
     font-size: 0.9em;
+  }
+
+  .nn-review-verified__text {
+    white-space: nowrap;
   }
 {% endstylesheet %}
 
@@ -96,11 +104,15 @@
       "default": "Verified Reviewer"
     },
     {
-      "type": "checkbox",
-      "id": "show_icon",
-      "label": "Show icon",
-      "default": true,
-      "info": "Show checkmark icon instead of text character"
+      "type": "select",
+      "id": "icon_style",
+      "label": "Icon style",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "checkmark", "label": "Checkmark (✓)" },
+        { "value": "icon", "label": "Icon (circle)" }
+      ],
+      "default": "icon"
     },
     {
       "type": "select",
@@ -115,34 +127,121 @@
     },
     {
       "type": "header",
-      "content": "Typography"
+      "content": "t:content.typography"
     },
     {
       "type": "select",
       "id": "type_preset",
-      "label": "Preset",
+      "label": "t:settings.preset",
       "options": [
-        { "value": "paragraph", "label": "Paragraph" },
-        { "value": "h6", "label": "H6" }
+        { "value": "paragraph", "label": "t:options.paragraph" },
+        { "value": "h1", "label": "t:options.h1" },
+        { "value": "h2", "label": "t:options.h2" },
+        { "value": "h3", "label": "t:options.h3" },
+        { "value": "h4", "label": "t:options.h4" },
+        { "value": "h5", "label": "t:options.h5" },
+        { "value": "h6", "label": "t:options.h6" },
+        { "value": "custom", "label": "t:options.custom" }
       ],
-      "default": "paragraph"
+      "default": "paragraph",
+      "info": "t:info.edit_presets_in_theme_settings"
     },
     {
       "type": "select",
-      "id": "width",
-      "label": "Width",
+      "id": "font",
+      "label": "t:settings.font",
       "options": [
-        { "value": "fit-content", "label": "Fit" },
-        { "value": "100%", "label": "Fill" }
+        { "value": "var(--font-body--family)", "label": "t:options.body" },
+        { "value": "var(--font-subheading--family)", "label": "t:options.subheading" },
+        { "value": "var(--font-heading--family)", "label": "t:options.heading" },
+        { "value": "var(--font-accent--family)", "label": "t:options.accent" }
       ],
-      "default": "fit-content"
+      "default": "var(--font-body--family)",
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
     },
     {
-      "type": "text_alignment",
-      "id": "alignment",
-      "label": "Alignment",
-      "default": "left",
-      "visible_if": "{{ block.settings.width != 'fit-content' }}"
+      "type": "select",
+      "id": "font_size",
+      "label": "t:settings.size",
+      "options": [
+        { "value": "", "label": "t:options.default" },
+        { "value": "0.625rem", "label": "10px" },
+        { "value": "0.75rem", "label": "12px" },
+        { "value": "0.875rem", "label": "14px" },
+        { "value": "1rem", "label": "16px" },
+        { "value": "1.125rem", "label": "18px" },
+        { "value": "1.25rem", "label": "20px" },
+        { "value": "1.5rem", "label": "24px" },
+        { "value": "2rem", "label": "32px" },
+        { "value": "2.5rem", "label": "40px" },
+        { "value": "3rem", "label": "48px" },
+        { "value": "3.5rem", "label": "56px" },
+        { "value": "4.5rem", "label": "72px" },
+        { "value": "5.5rem", "label": "88px" },
+        { "value": "7.5rem", "label": "120px" },
+        { "value": "9.5rem", "label": "152px" },
+        { "value": "11.5rem", "label": "184px" }
+      ],
+      "default": "1rem",
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "line_height",
+      "label": "t:settings.line_height",
+      "options": [
+        { "value": "tight", "label": "t:options.tight" },
+        { "value": "normal", "label": "t:options.normal" },
+        { "value": "loose", "label": "t:options.loose" }
+      ],
+      "default": "normal",
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "letter_spacing",
+      "label": "t:settings.letter_spacing",
+      "options": [
+        { "value": "tight", "label": "t:options.tight" },
+        { "value": "normal", "label": "t:options.normal" },
+        { "value": "loose", "label": "t:options.loose" }
+      ],
+      "default": "normal",
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "case",
+      "label": "t:settings.case",
+      "options": [
+        { "value": "none", "label": "t:options.default" },
+        { "value": "uppercase", "label": "t:options.uppercase" }
+      ],
+      "default": "none",
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "wrap",
+      "label": "t:settings.wrap",
+      "options": [
+        { "value": "pretty", "label": "t:options.pretty" },
+        { "value": "balance", "label": "t:options.balance" },
+        { "value": "nowrap", "label": "t:options.none" }
+      ],
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "color",
+      "label": "t:settings.color",
+      "options": [
+        { "value": "var(--color-foreground)", "label": "t:options.text" },
+        { "value": "var(--color-foreground-heading)", "label": "t:options.heading" },
+        { "value": "var(--color-primary)", "label": "t:options.link" }
+      ],
+      "default": "var(--color-foreground)",
+      "info": "Note: This will be overridden by the Style setting above"
     }
   ],
   "presets": [

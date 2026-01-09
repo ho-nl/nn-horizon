@@ -1,0 +1,178 @@
+{% doc %}
+  NN Review Read More Block
+
+  A container block that provides expand/collapse functionality for its nested content.
+  Uses a "Read more" / "Read less" button to toggle visibility of content that exceeds
+  the specified maximum number of lines.
+
+  @example
+  Add this block inside a review card and nest a Text block with the review body content.
+{% enddoc %}
+
+{% liquid
+  assign block_settings = block.settings
+  assign max_lines = block_settings.max_lines | default: 4
+%}
+
+<div
+  class="nn-review-read-more"
+  style="--max-lines: {{ max_lines }};"
+  data-nn-review-read-more="{{ block.id }}"
+  {{ block.shopify_attributes }}
+>
+  <div
+    class="nn-review-read-more__content nn-review-read-more__content--collapsed"
+    data-nn-review-read-more-content
+  >
+    {% content_for 'blocks' %}
+  </div>
+  <button
+    class="nn-review-read-more__toggle"
+    data-nn-review-read-more-toggle
+    data-read-more="{{ block_settings.read_more_text }}"
+    data-read-less="{{ block_settings.read_less_text }}"
+    type="button"
+    aria-expanded="false"
+  >
+    {{ block_settings.read_more_text }}
+  </button>
+</div>
+
+<script>
+  (function() {
+    const wrapper = document.querySelector('[data-nn-review-read-more="{{ block.id }}"]');
+    if (!wrapper) return;
+
+    const content = wrapper.querySelector('[data-nn-review-read-more-content]');
+    const button = wrapper.querySelector('[data-nn-review-read-more-toggle]');
+    if (!content || !button) return;
+
+    const readMoreText = button.dataset.readMore;
+    const readLessText = button.dataset.readLess;
+
+    function checkOverflow() {
+      if (content.scrollHeight > content.clientHeight) {
+        button.classList.add('nn-review-read-more__toggle--visible');
+      } else {
+        button.classList.remove('nn-review-read-more__toggle--visible');
+      }
+    }
+
+    // Initial check after fonts load
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(checkOverflow);
+    } else {
+      setTimeout(checkOverflow, 100);
+    }
+
+    // Re-check on resize
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(checkOverflow, 100);
+    });
+
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      const isCollapsed = content.classList.contains('nn-review-read-more__content--collapsed');
+
+      if (isCollapsed) {
+        content.classList.remove('nn-review-read-more__content--collapsed');
+        button.textContent = readLessText;
+        button.setAttribute('aria-expanded', 'true');
+      } else {
+        content.classList.add('nn-review-read-more__content--collapsed');
+        button.textContent = readMoreText;
+        button.setAttribute('aria-expanded', 'false');
+      }
+    });
+  })();
+</script>
+
+{% stylesheet %}
+  .nn-review-read-more {
+    position: relative;
+  }
+
+  .nn-review-read-more__content {
+    line-height: 1.6;
+  }
+
+  .nn-review-read-more__content--collapsed {
+    max-height: calc(var(--max-lines, 4) * 1lh);
+    overflow: hidden;
+    mask-image: linear-gradient(to bottom, black calc((var(--max-lines, 4) - 1) * 1lh), transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black calc((var(--max-lines, 4) - 1) * 1lh), transparent 100%);
+  }
+
+  .nn-review-read-more__toggle {
+    background: none;
+    border: none;
+    color: var(--color-primary, currentColor);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    cursor: pointer;
+    padding: 0;
+    margin-top: 0.5rem;
+    font-size: inherit;
+    font-family: inherit;
+    display: none;
+  }
+
+  .nn-review-read-more__toggle--visible {
+    display: inline-block;
+  }
+
+  .nn-review-read-more__toggle:hover {
+    opacity: 0.8;
+  }
+
+  .nn-review-read-more__toggle:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Read More",
+  "tag": null,
+  "blocks": [
+    { "type": "@theme" }
+  ],
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "A container that provides expand/collapse functionality for its nested content. Add a Text block inside with the review body content."
+    },
+    {
+      "type": "range",
+      "id": "max_lines",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "label": "Maximum lines before collapse",
+      "default": 4,
+      "info": "Number of lines to show before 'Read more' button appears"
+    },
+    {
+      "type": "text",
+      "id": "read_more_text",
+      "label": "Read more text",
+      "default": "Read more"
+    },
+    {
+      "type": "text",
+      "id": "read_less_text",
+      "label": "Read less text",
+      "default": "Read less"
+    }
+  ],
+  "presets": [
+    {
+      "name": "NN Review Read More",
+      "category": "NN Review"
+    }
+  ]
+}
+{% endschema %}

@@ -67,7 +67,7 @@
 
 {% if total_pages > 1 %}
   <nav
-    class="nn-reviews-pagination nn-reviews-pagination--{{ style }}"
+    class="nn-reviews-pagination nn-reviews-pagination--{{ style }} {{ block.settings.type_preset }}"
     aria-label="Reviews pagination"
     {{ block.shopify_attributes }}
   >
@@ -301,6 +301,35 @@
       "label": "Scroll target ID",
       "default": "nn-reviews",
       "info": "The element ID to scroll to when navigating pages"
+    },
+    {
+      "type": "header",
+      "content": "t:content.typography"
+    },
+    {
+      "type": "select",
+      "id": "type_preset",
+      "label": "t:settings.preset",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.default"
+        },
+        {
+          "value": "paragraph",
+          "label": "t:options.paragraph"
+        },
+        {
+          "value": "h5",
+          "label": "t:options.h5"
+        },
+        {
+          "value": "h6",
+          "label": "t:options.h6"
+        }
+      ],
+      "default": "paragraph",
+      "info": "t:info.edit_presets_in_theme_settings"
     }
   ],
   "presets": [

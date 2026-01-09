@@ -45,7 +45,7 @@
   endif
 %}
 
-<div class="nn-reviews-sort" {{ block.shopify_attributes }}>
+<div class="nn-reviews-sort {{ block.settings.type_preset }}" {{ block.shopify_attributes }}>
   <div class="nn-reviews-sort__container">
     <label for="nn-reviews-sort-select-{{ block.id }}" class="nn-reviews-sort__label">
       Sort by
@@ -173,6 +173,35 @@
       ],
       "default": "newest",
       "info": "This will be overridden if the user selects a different sort order"
+    },
+    {
+      "type": "header",
+      "content": "t:content.typography"
+    },
+    {
+      "type": "select",
+      "id": "type_preset",
+      "label": "t:settings.preset",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.default"
+        },
+        {
+          "value": "paragraph",
+          "label": "t:options.paragraph"
+        },
+        {
+          "value": "h5",
+          "label": "t:options.h5"
+        },
+        {
+          "value": "h6",
+          "label": "t:options.h6"
+        }
+      ],
+      "default": "paragraph",
+      "info": "t:info.edit_presets_in_theme_settings"
     }
   ],
   "presets": [

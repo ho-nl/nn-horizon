@@ -118,9 +118,7 @@
     {% capture list_items %}
       {% for review in sorted_reviews limit: max_display offset: start_index %}
         <div class="resource-list__item">
-          {% # theme-check-disable UniqueStaticBlockId %}
           {% content_for 'block', type: 'nn-review-card', id: 'static-review-card', closest.metaobject.nn_reviews: review %}
-          {% # theme-check-enable UniqueStaticBlockId %}
         </div>
         {% unless forloop.last %}
           <!--@list/split-->
@@ -449,15 +447,45 @@
                 "gap": 8
               },
               "blocks": {
-                "author": { "type": "nn-review-author" },
+                "author": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>{{ closest.metaobject.nn_reviews.author_display_name.value }}</p>",
+                    "type_preset": "h5"
+                  }
+                },
                 "rating": { "type": "nn-review-rating" },
                 "verified": { "type": "nn-review-verified" },
                 "date": { "type": "nn-review-date" }
               },
               "block_order": ["author", "rating", "verified", "date"]
             },
-            "title": { "type": "nn-review-title" },
-            "body": { "type": "nn-review-body" },
+            "title": {
+              "type": "text",
+              "settings": {
+                "text": "<h5>{{ closest.metaobject.nn_reviews.title.value }}</h5>",
+                "type_preset": "h5",
+                "font": "var(--font-heading--family)",
+                "color": "var(--color-foreground-heading)"
+              }
+            },
+            "body": {
+              "type": "nn-review-read-more",
+              "settings": {
+                "max_lines": 4,
+                "read_more_text": "Read more",
+                "read_less_text": "Read less"
+              },
+              "blocks": {
+                "body_text": {
+                  "type": "text",
+                  "settings": {
+                    "text": "{{ closest.metaobject.nn_reviews.body | metafield_tag }}"
+                  }
+                }
+              },
+              "block_order": ["body_text"]
+            },
             "reply": { "type": "nn-review-reply" }
           },
           "block_order": ["header-group", "title", "body", "reply"]

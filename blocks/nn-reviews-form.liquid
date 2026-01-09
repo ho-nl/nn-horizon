@@ -2,7 +2,7 @@
   NN Reviews Form Block
 
   A button that opens a modal dialog with a review submission form.
-  Uses native <dialog> element with smooth animations.
+  Uses the dialog-component custom element with smooth animations.
 
   @example
   Add this block to allow customers to submit reviews
@@ -13,189 +13,219 @@
 %}
 
 {% if form_product and form_product.id %}
-<div class="nn-review-form-wrapper" {{ block.shopify_attributes }}>
-  <button
-    class="nn-review-form__trigger-button button"
-    data-nn-form-trigger="{{ block.id }}"
-    type="button"
-  >
-    {{ block.settings.button_text }}
-  </button>
+  <script
+    src="{{ 'dialog.js' | asset_url }}"
+    type="module"
+  ></script>
 
-  <dialog
-    class="nn-review-form__dialog"
-    data-nn-form-dialog="{{ block.id }}"
+  <dialog-component
+    class="nn-review-form-wrapper"
+    id="nn-review-form-wrapper-{{ block.id }}"
+    {{ block.shopify_attributes }}
   >
-    <div class="nn-review-form {{ block.settings.typography_preset }}">
-      <button
-        class="nn-review-form__close-button"
-        data-nn-form-close="{{ block.id }}"
-        type="button"
-        aria-label="Close"
+    <button
+      on:click="/showDialog"
+      class="button nn-review-form__trigger-button"
+      type="button"
+    >
+      {{ block.settings.button_text }}
+    </button>
+
+    <dialog
+      ref="dialog"
+      class="nn-review-form__dialog dialog-modal color-{{ settings.popover_color_scheme }}"
+      aria-labelledby="nn-review-form-heading-{{ block.id }}"
+    >
+      <h2
+        id="nn-review-form-heading-{{ block.id }}"
+        class="visually-hidden"
       >
-        ×
-      </button>
+        {{ block.settings.heading }}
+      </h2>
 
-      <div class="nn-review-form__content">
-        <h2 class="nn-review-form__heading {{ block.settings.heading_preset }}">
-          {{ block.settings.heading }}
-        </h2>
+      <div class="nn-review-form {{ block.settings.form_type_preset }}">
+        <div class="nn-review-form__content">
+          <h3 class="nn-review-form__heading {{ block.settings.heading_type_preset }}">
+            {{ block.settings.heading }}
+          </h3>
 
-        {% if block.settings.show_description %}
-          <p class="nn-review-form__description">
-            {{ block.settings.description }}
-          </p>
-        {% endif %}
-
-        <form
-          class="nn-review-form__form"
-          method="POST"
-          data-nn-review-form="{{ block.id }}"
-        >
-          <input type="hidden" name="productId" value="gid://shopify/Product/{{ form_product.id }}" data-product-id>
-          <input type="hidden" name="variantId" value="" data-variant-id>
-          <input type="hidden" name="orderId" value="" data-order-id>
-          <input type="hidden" name="language" value="{{ request.locale.iso_code }}" data-language>
-          {% if customer %}
-            <input type="hidden" name="customerId" value="gid://shopify/Customer/{{ customer.id }}" data-customer-id>
-            <input type="hidden" name="author" value="{{ customer.name }}" data-author-hidden>
-            <input type="hidden" name="email" value="{{ customer.email }}" data-email-hidden>
+          {% if block.settings.show_description %}
+            <p class="nn-review-form__description">
+              {{ block.settings.description }}
+            </p>
           {% endif %}
 
-          <!-- Rating Field -->
-          <div class="nn-review-form__field">
-            <label for="rating-{{ block.id }}" class="nn-review-form__label">
-              Rating
-              <span class="nn-review-form__required">*</span>
-            </label>
-            <div class="nn-review-form__rating" style="--star-color: {{ block.settings.star_color }};">
-              {% for i in (1..5) %}
-                <input
-                  type="radio"
-                  id="rating-{{ i }}-{{ block.id }}"
-                  name="rating"
-                  value="{{ i }}"
-                  required
-                  class="nn-review-form__rating-input"
-                  data-rating
-                >
-                <label
-                  for="rating-{{ i }}-{{ block.id }}"
-                  class="nn-review-form__rating-star"
-                  data-rating="{{ i }}"
-                >
-                  ★
-                </label>
-              {% endfor %}
-            </div>
-          </div>
+          <form
+            class="nn-review-form__form"
+            method="POST"
+            id="nn-review-form-{{ block.id }}"
+            data-review-form
+          >
+            <input type="hidden" name="productId" value="gid://shopify/Product/{{ form_product.id }}" data-product-id>
+            <input type="hidden" name="variantId" value="" data-variant-id>
+            <input type="hidden" name="orderId" value="" data-order-id>
+            <input type="hidden" name="language" value="{{ request.locale.iso_code }}" data-language>
+            {% if customer %}
+              <input type="hidden" name="customerId" value="gid://shopify/Customer/{{ customer.id }}" data-customer-id>
+              <input type="hidden" name="author" value="{{ customer.name }}" data-author-hidden>
+              <input type="hidden" name="email" value="{{ customer.email }}" data-email-hidden>
+            {% endif %}
 
-          <!-- Title Field -->
-          <div class="nn-review-form__field">
-            <label for="title-{{ block.id }}" class="nn-review-form__label">
-              Title
-              <span class="nn-review-form__required">*</span>
-            </label>
-            <input
-              type="text"
-              id="title-{{ block.id }}"
-              name="title"
-              class="nn-review-form__input"
-              placeholder="Give your review a title"
-              maxlength="100"
-              required
-              data-title
-            >
-          </div>
-
-          <!-- Review Body -->
-          <div class="nn-review-form__field">
-            <label for="body-{{ block.id }}" class="nn-review-form__label">
-              Review
-              <span class="nn-review-form__required">*</span>
-            </label>
-            <textarea
-              id="body-{{ block.id }}"
-              name="body"
-              class="nn-review-form__textarea"
-              placeholder="Write your review here..."
-              required
-              minlength="10"
-              rows="5"
-              data-body
-            ></textarea>
-          </div>
-
-          <!-- Author Name (hidden if customer is logged in) -->
-          {% unless customer %}
+            <!-- Rating Field -->
             <div class="nn-review-form__field">
-              <label for="author-{{ block.id }}" class="nn-review-form__label">
-                Name
+              <label for="rating-{{ block.id }}" class="nn-review-form__label">
+                Rating
+                <span class="nn-review-form__required">*</span>
+              </label>
+              <div class="nn-review-form__rating" style="--star-color: {{ block.settings.star_color }};">
+                {% for i in (1..5) %}
+                  <input
+                    type="radio"
+                    id="rating-{{ i }}-{{ block.id }}"
+                    name="rating"
+                    value="{{ i }}"
+                    required
+                    class="nn-review-form__rating-input"
+                    data-rating
+                  >
+                  <label
+                    for="rating-{{ i }}-{{ block.id }}"
+                    class="nn-review-form__rating-star"
+                    data-rating="{{ i }}"
+                  >
+                    ★
+                  </label>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Title Field -->
+            <div class="nn-review-form__field">
+              <label for="title-{{ block.id }}" class="nn-review-form__label">
+                Title
                 <span class="nn-review-form__required">*</span>
               </label>
               <input
                 type="text"
-                id="author-{{ block.id }}"
-                name="author"
+                id="title-{{ block.id }}"
+                name="title"
                 class="nn-review-form__input"
-                placeholder="Your name"
+                placeholder="Give your review a title"
+                maxlength="100"
                 required
-                data-author
+                data-title
               >
             </div>
 
-            <!-- Author Email -->
+            <!-- Review Body -->
             <div class="nn-review-form__field">
-              <label for="email-{{ block.id }}" class="nn-review-form__label">
-                Email
+              <label for="body-{{ block.id }}" class="nn-review-form__label">
+                Review
                 <span class="nn-review-form__required">*</span>
               </label>
-              <input
-                type="email"
-                id="email-{{ block.id }}"
-                name="email"
-                class="nn-review-form__input"
-                placeholder="your@email.com"
+              <textarea
+                id="body-{{ block.id }}"
+                name="body"
+                class="nn-review-form__textarea"
+                placeholder="Write your review here..."
                 required
-                data-email
-              >
+                minlength="10"
+                rows="5"
+                data-body
+              ></textarea>
             </div>
-          {% endunless %}
 
-          <!-- Submit Button -->
-          <div class="nn-review-form__actions">
-            <button
-              type="submit"
-              class="nn-review-form__submit button"
-              data-submit-button
-            >
-              Submit Review
-            </button>
-          </div>
+            <!-- Author Name (hidden if customer is logged in) -->
+            {% unless customer %}
+              <div class="nn-review-form__field">
+                <label for="author-{{ block.id }}" class="nn-review-form__label">
+                  Name
+                  <span class="nn-review-form__required">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="author-{{ block.id }}"
+                  name="author"
+                  class="nn-review-form__input"
+                  placeholder="Your name"
+                  required
+                  data-author
+                >
+              </div>
 
-          <!-- Success/Error Messages -->
-          <div class="nn-review-form__message" data-message hidden></div>
-        </form>
+              <!-- Author Email -->
+              <div class="nn-review-form__field">
+                <label for="email-{{ block.id }}" class="nn-review-form__label">
+                  Email
+                  <span class="nn-review-form__required">*</span>
+                </label>
+                <input
+                  type="email"
+                  id="email-{{ block.id }}"
+                  name="email"
+                  class="nn-review-form__input"
+                  placeholder="your@email.com"
+                  required
+                  data-email
+                >
+              </div>
+            {% endunless %}
+
+            <!-- Submit Button -->
+            <div class="nn-review-form__actions">
+              <button
+                type="submit"
+                class="nn-review-form__submit button"
+                data-submit-button
+              >
+                Submit Review
+              </button>
+            </div>
+
+            <!-- Success/Error Messages -->
+            <div class="nn-review-form__message" data-message hidden></div>
+          </form>
+        </div>
       </div>
-    </div>
-  </dialog>
-</div>
 
-<script>
-  (function() {
-    const blockId = '{{ block.id }}';
-    const triggerButton = document.querySelector('[data-nn-form-trigger="' + blockId + '"]');
-    const formDialog = document.querySelector('[data-nn-form-dialog="' + blockId + '"]');
-    const form = document.querySelector('[data-nn-review-form="' + blockId + '"]');
-    const closeButtons = document.querySelectorAll('[data-nn-form-close="' + blockId + '"]');
+      <button
+        ref="closeButton"
+        on:click="/closeDialog"
+        class="button button-unstyled close-button nn-review-form__close"
+        aria-label="{{ 'accessibility.close_dialog' | t }}"
+      >
+        {{- 'icon-close.svg' | inline_asset_content -}}
+      </button>
+    </dialog>
+  </dialog-component>
+{% endif %}
 
-    if (!form || !formDialog) return;
+{% javascript %}
+  class NNReviewFormComponent extends HTMLElement {
+    connectedCallback() {
+      this.form = this.querySelector('[data-review-form]');
+      if (!this.form) return;
 
-    const submitButton = form.querySelector('[data-submit-button]');
-    const messageEl = form.querySelector('[data-message]');
-    const variantIdInput = form.querySelector('[data-variant-id]');
+      this.submitButton = this.form.querySelector('[data-submit-button]');
+      this.messageEl = this.form.querySelector('[data-message]');
+      this.variantIdInput = this.form.querySelector('[data-variant-id]');
 
-    function detectCurrentVariant() {
+      this.form.addEventListener('submit', this.#handleSubmit.bind(this));
+
+      this.form.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          this.form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+        }
+      });
+
+      // Update variant ID when dialog opens
+      this.addEventListener('dialog:open', () => {
+        this.#updateVariantId();
+      });
+    }
+
+    #detectCurrentVariant() {
       const productForm = document.querySelector('form[action*="/cart/add"]');
       if (productForm) {
         const variantInput = productForm.querySelector('[name="id"]');
@@ -211,72 +241,34 @@
       return '';
     }
 
-    function updateVariantId() {
-      if (variantIdInput) {
-        variantIdInput.value = detectCurrentVariant();
+    #updateVariantId() {
+      if (this.variantIdInput) {
+        this.variantIdInput.value = this.#detectCurrentVariant();
       }
     }
 
-    function openDialog() {
-      updateVariantId();
-      if (document.startViewTransition) {
-        document.startViewTransition(() => formDialog.showModal());
-      } else {
-        formDialog.showModal();
-      }
+    #showMessage(text, isSuccess) {
+      this.messageEl.textContent = text;
+      this.messageEl.className = 'nn-review-form__message';
+      this.messageEl.classList.add(isSuccess ? 'nn-review-form__message--success' : 'nn-review-form__message--error');
+      this.messageEl.hidden = false;
     }
 
-    function closeDialog() {
-      if (document.startViewTransition) {
-        document.startViewTransition(() => formDialog.close());
-      } else {
-        formDialog.close();
-      }
-    }
-
-    if (triggerButton) {
-      triggerButton.addEventListener('click', openDialog);
-    }
-
-    closeButtons.forEach(function(button) {
-      button.addEventListener('click', closeDialog);
-    });
-
-    formDialog.addEventListener('click', function(e) {
-      const rect = formDialog.getBoundingClientRect();
-      const isInDialog = (
-        rect.top <= e.clientY &&
-        e.clientY <= rect.top + rect.height &&
-        rect.left <= e.clientX &&
-        e.clientX <= rect.left + rect.width
-      );
-      if (!isInDialog) {
-        closeDialog();
-      }
-    });
-
-    function showMessage(text, isSuccess) {
-      messageEl.textContent = text;
-      messageEl.className = 'nn-review-form__message';
-      messageEl.classList.add(isSuccess ? 'nn-review-form__message--success' : 'nn-review-form__message--error');
-      messageEl.hidden = false;
-    }
-
-    async function handleSubmit(e) {
+    async #handleSubmit(e) {
       e.preventDefault();
       e.stopPropagation();
 
-      if (!form.checkValidity()) {
-        form.reportValidity();
+      if (!this.form.checkValidity()) {
+        this.form.reportValidity();
         return;
       }
 
-      submitButton.disabled = true;
-      submitButton.textContent = 'Submitting...';
-      messageEl.hidden = true;
+      this.submitButton.disabled = true;
+      this.submitButton.textContent = 'Submitting...';
+      this.messageEl.hidden = true;
 
       try {
-        const formData = new FormData(form);
+        const formData = new FormData(this.form);
         const response = await fetch('/apps/nn_reviews/submit', {
           method: 'POST',
           body: formData,
@@ -285,31 +277,32 @@
         const result = await response.json();
 
         if (response.ok && result.success) {
-          showMessage(result.message || 'Thank you for your review!', true);
-          form.reset();
-          setTimeout(closeDialog, 2000);
+          this.#showMessage(result.message || 'Thank you for your review!', true);
+          this.form.reset();
+
+          // Close dialog after success
+          setTimeout(() => {
+            const dialogComponent = this.closest('dialog-component');
+            if (dialogComponent && typeof dialogComponent.closeDialog === 'function') {
+              dialogComponent.closeDialog();
+            }
+          }, 2000);
         } else {
-          showMessage(result.error || 'Something went wrong. Please try again.', false);
+          this.#showMessage(result.error || 'Something went wrong. Please try again.', false);
         }
       } catch (error) {
-        showMessage('Something went wrong. Please try again.', false);
+        this.#showMessage('Something went wrong. Please try again.', false);
       } finally {
-        submitButton.disabled = false;
-        submitButton.textContent = 'Submit Review';
+        this.submitButton.disabled = false;
+        this.submitButton.textContent = 'Submit Review';
       }
     }
+  }
 
-    form.addEventListener('submit', handleSubmit);
-
-    form.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
-        e.preventDefault();
-        form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-      }
-    });
-  })();
-</script>
-{% endif %}
+  if (!customElements.get('nn-review-form')) {
+    customElements.define('nn-review-form', NNReviewFormComponent);
+  }
+{% endjavascript %}
 
 {% stylesheet %}
   .nn-review-form__trigger-button {
@@ -317,110 +310,80 @@
   }
 
   .nn-review-form__dialog {
-    max-width: 600px;
-    width: 90%;
+    box-shadow: var(--shadow-popover);
+    border: var(--style-border-popover);
+    border-radius: var(--style-border-radius-popover);
+    background-color: var(--color-background);
+    padding: var(--padding-4xl) var(--padding-xl) var(--padding-xl);
+    width: 90vw;
+    max-width: 700px;
     max-height: 90vh;
-    border: none;
-    border-radius: var(--border-radius-md, 8px);
-    padding: 0;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
-  }
 
-  .nn-review-form__dialog::backdrop {
-    background: rgba(0, 0, 0, 0.5);
+    @media screen and (min-width: 750px) {
+      padding: var(--padding-5xl);
+    }
   }
 
   .nn-review-form__dialog[open] {
-    animation: nn-dialog-fade-in 0.3s ease;
+    animation: modalSlideInTop var(--animation-speed) var(--animation-easing) forwards;
   }
 
-  @keyframes nn-dialog-fade-in {
-    from {
-      opacity: 0;
-      transform: scale(0.95) translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1) translateY(0);
-    }
+  .nn-review-form__dialog.dialog-closing {
+    animation: modalSlideOutTop var(--animation-speed) var(--animation-easing) forwards;
   }
 
-  .nn-review-form__dialog .nn-review-form {
-    padding: 2rem;
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-
-  .nn-review-form__close-button {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: none;
-    border: none;
-    font-size: 2rem;
-    line-height: 1;
-    cursor: pointer;
-    color: currentColor;
-    opacity: 0.6;
-    padding: 0;
-    width: 2rem;
-    height: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1;
-  }
-
-  .nn-review-form__close-button:hover {
-    opacity: 1;
+  .nn-review-form__close {
+    top: var(--margin-2xs);
+    right: var(--margin-2xs);
+    opacity: 0.8;
+    animation: none;
   }
 
   .nn-review-form {
-    max-width: 600px;
+    max-width: 100%;
     position: relative;
   }
 
   .nn-review-form__heading {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: var(--margin-md);
   }
 
   .nn-review-form__description {
-    margin-bottom: 1.5rem;
+    margin-bottom: var(--margin-lg);
     opacity: 0.7;
   }
 
   .nn-review-form__field {
-    margin-bottom: 1.5rem;
+    margin-bottom: var(--margin-lg);
   }
 
   .nn-review-form__label {
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--margin-xs);
     font-weight: 500;
   }
 
   .nn-review-form__required {
-    color: #e74c3c;
+    color: rgb(var(--color-error, 231 76 60));
   }
 
   .nn-review-form__input,
   .nn-review-form__textarea {
     width: 100%;
-    padding: 0.75rem;
+    padding: var(--padding-sm);
     border: 1px solid rgb(var(--color-foreground-rgb) / 0.2);
-    border-radius: var(--border-radius-sm, 4px);
+    border-radius: var(--style-border-radius-input, 4px);
     font-family: inherit;
     font-size: 1rem;
     background: transparent;
     color: currentColor;
-    transition: border-color 0.2s;
+    transition: border-color var(--animation-speed);
   }
 
   .nn-review-form__input:focus,
   .nn-review-form__textarea:focus {
     outline: none;
-    border-color: var(--color-primary, currentColor);
+    border-color: rgb(var(--color-foreground-rgb) / 0.5);
   }
 
   .nn-review-form__textarea {
@@ -429,7 +392,7 @@
 
   .nn-review-form__rating {
     display: flex;
-    gap: 0.25rem;
+    gap: var(--margin-2xs);
   }
 
   .nn-review-form__rating-input {
@@ -440,7 +403,7 @@
     font-size: 2rem;
     color: rgb(var(--color-foreground-rgb) / 0.2);
     cursor: pointer;
-    transition: color 0.2s;
+    transition: color var(--animation-speed);
   }
 
   .nn-review-form__rating:has(.nn-review-form__rating-star:hover) .nn-review-form__rating-star:hover,
@@ -453,6 +416,10 @@
     color: var(--star-color, #ffc107);
   }
 
+  .nn-review-form__actions {
+    margin-top: var(--margin-lg);
+  }
+
   .nn-review-form__submit {
     cursor: pointer;
   }
@@ -463,28 +430,28 @@
   }
 
   .nn-review-form__message {
-    margin-top: 1rem;
-    padding: 1rem;
-    border-radius: var(--border-radius-sm, 4px);
+    margin-top: var(--margin-md);
+    padding: var(--padding-md);
+    border-radius: var(--style-border-radius-input, 4px);
   }
 
   .nn-review-form__message--success {
-    background: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+    background: rgb(var(--color-success-bg, 212 237 218));
+    color: rgb(var(--color-success-text, 21 87 36));
+    border: 1px solid rgb(var(--color-success-border, 195 230 203));
   }
 
   .nn-review-form__message--error {
-    background: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+    background: rgb(var(--color-error-bg, 248 215 218));
+    color: rgb(var(--color-error-text, 114 28 36));
+    border: 1px solid rgb(var(--color-error-border, 245 198 203));
   }
 {% endstylesheet %}
 
 {% schema %}
 {
   "name": "NN Reviews Form",
-  "tag": null,
+  "tag": "nn-review-form",
   "settings": [
     {
       "type": "product",
@@ -509,27 +476,6 @@
       "default": "Write a Review"
     },
     {
-      "type": "select",
-      "id": "heading_preset",
-      "label": "Heading preset",
-      "options": [
-        { "value": "h2", "label": "H2" },
-        { "value": "h3", "label": "H3" },
-        { "value": "h4", "label": "H4" }
-      ],
-      "default": "h3"
-    },
-    {
-      "type": "select",
-      "id": "typography_preset",
-      "label": "Form typography",
-      "options": [
-        { "value": "", "label": "Default" },
-        { "value": "paragraph", "label": "Paragraph" }
-      ],
-      "default": "paragraph"
-    },
-    {
       "type": "checkbox",
       "id": "show_description",
       "label": "Show description",
@@ -550,12 +496,66 @@
       "id": "star_color",
       "label": "Star color",
       "default": "#ffc107"
+    },
+    {
+      "type": "header",
+      "content": "t:content.typography"
+    },
+    {
+      "type": "select",
+      "id": "heading_type_preset",
+      "label": "Heading preset",
+      "options": [
+        {
+          "value": "h1",
+          "label": "t:options.h1"
+        },
+        {
+          "value": "h2",
+          "label": "t:options.h2"
+        },
+        {
+          "value": "h3",
+          "label": "t:options.h3"
+        },
+        {
+          "value": "h4",
+          "label": "t:options.h4"
+        },
+        {
+          "value": "h5",
+          "label": "t:options.h5"
+        },
+        {
+          "value": "h6",
+          "label": "t:options.h6"
+        }
+      ],
+      "default": "h3",
+      "info": "t:info.edit_presets_in_theme_settings"
+    },
+    {
+      "type": "select",
+      "id": "form_type_preset",
+      "label": "Form text preset",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.default"
+        },
+        {
+          "value": "paragraph",
+          "label": "t:options.paragraph"
+        }
+      ],
+      "default": "paragraph",
+      "info": "t:info.edit_presets_in_theme_settings"
     }
   ],
   "presets": [
     {
       "name": "NN Reviews Form",
-      "category": "NN Review"
+      "category": "NN Review",
     }
   ]
 }
