@@ -1,0 +1,113 @@
+{%- doc -%}
+  NN Favorites Bubble - Horizon Theme Integration
+  
+  Renders a bubble showing the favorites count, following Horizon's cart-bubble pattern.
+
+  @param {number} [item_count] - The number of items (default: 0)
+  @param {string} [list_type] - The list type identifier for unique IDs (default: 'favorites')
+  @param {number} [limit] - Maximum count to display before showing "99+" (default: 100)
+  @param {boolean} [live_region] - Whether to use ARIA live region (default: false)
+{%- enddoc -%}
+
+{%- liquid
+  assign item_count = item_count | default: 0
+  assign list_type = list_type | default: 'favorites'
+  assign limit = limit | default: 100
+-%}
+
+<div
+  ref="bubble"
+  class="nn-favorites-bubble{% if item_count == 0 %} visually-hidden{% endif %}"
+  {% if item_count <= 99 %}
+    data-maintain-ratio
+  {% endif %}
+>
+  <span class="nn-favorites-bubble__background"></span>
+  <span
+    ref="bubbleText"
+    id="nn-favorites-bubble-text-{{ list_type }}"
+    class="nn-favorites-bubble__text"
+    {% if live_region %}
+      role="status"
+    {% endif %}
+  >
+    <span class="visually-hidden">
+      {{- 'accessibility.favorites_count' | t | default: 'Favorites count' -}}
+      : {{ item_count }}
+    </span>
+    <span
+      class="nn-favorites-bubble__text-count{% if item_count == 0 %} hidden{% endif %}"
+      ref="bubbleCount"
+      aria-hidden="true"
+      data-testid="nn-favorites-bubble"
+    >
+      {%- if limit == blank or item_count < limit %}
+        {{- item_count -}}
+      {%- endif -%}
+    </span>
+  </span>
+</div>
+
+{% stylesheet %}
+  /* NN Favorites Bubble - Following Horizon's cart-bubble pattern */
+  .nn-favorites-bubble {
+    --nn-favorites-padding: 0.2em;
+
+    position: relative;
+    width: 20px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border-width: 0;
+    display: flex;
+    line-height: normal;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary-button-text);
+    padding-inline: var(--nn-favorites-padding);
+  }
+
+  .nn-favorites-bubble__background {
+    position: absolute;
+    inset: 0;
+    background-color: var(--color-primary-button-background);
+    border-radius: var(--style-border-radius-lg);
+  }
+
+  .nn-favorites-bubble__text {
+    font-size: var(--font-size--3xs);
+    z-index: var(--layer-flat);
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .nn-favorites-bubble__text-count:empty {
+    display: none;
+  }
+
+  /* Animation support */
+  .nn-favorites-bubble--animating .nn-favorites-bubble__background {
+    animation: nn-favorites-grow var(--animation-speed) var(--animation-easing);
+  }
+
+  .nn-favorites-bubble--animating .nn-favorites-bubble__text {
+    --start-y: -1em;
+    --start-opacity: 1;
+    transform: translate(0, var(--start-y, -1em));
+    opacity: var(--start-opacity, 1);
+    animation: move-and-fade var(--animation-speed) var(--animation-easing);
+  }
+
+  @keyframes nn-favorites-grow {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+{% endstylesheet %}
