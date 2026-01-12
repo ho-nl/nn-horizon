@@ -33,6 +33,10 @@
 
   {% capture list_items %}
     {% for collection in section_collections limit: max_items %}
+      {% comment %} Skip favorites collections {% endcomment %}
+      {% if collection.metafields.nn_favorites.list_type != blank %}
+        {% continue %}
+      {% endif %}
       <div class="resource-list__item">
         {% content_for 'block', type: '_collection-card', id: 'static-collection-card', closest.collection: collection %}
       </div>
