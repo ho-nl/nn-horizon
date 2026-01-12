@@ -76,7 +76,7 @@
         "horizontal_alignment": "flex-start",
         "vertical_alignment": "center",
         "align_baseline": false,
-        "horizontal_alignment_flex_direction_column": "flex-start",
+        "horizontal_alignment_flex_direction_column": "center",
         "vertical_alignment_flex_direction_column": "center",
         "gap": 12,
         "section_width": "page-width",
@@ -96,6 +96,58 @@
         "gradient_direction": "to top",
         "padding-block-start": 48,
         "padding-block-end": 48
+      }
+    },
+    "176822386504cec53a": {
+      "type": "_blocks",
+      "blocks": {
+        "nn_favorites_collection_guard_jctgPU": {
+          "type": "shopify://apps/nn-favorites/blocks/collection-guard/019b0dbf-b4a8-7f29-9f26-3c82f286fb59",
+          "settings": {
+            "title": "Login Required",
+            "message": "Please log in to view your product list.",
+            "button_text": "Log In",
+            "show_icon": true,
+            "background_color": "#f3f4f6",
+            "border_color": "#e5e7eb",
+            "text_color": "#374151",
+            "icon_color": "#6b7280",
+            "button_color": "#111827",
+            "button_text_color": "#ffffff",
+            "padding": 32,
+            "border_radius": 8
+          }
+        }
+      },
+      "block_order": [
+        "nn_favorites_collection_guard_jctgPU"
+      ],
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "center",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "color_scheme": "",
+        "background_media": "none",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "padding-block-start": 0,
+        "padding-block-end": 0
       }
     },
     "main": {
@@ -263,6 +315,7 @@
   },
   "order": [
     "section",
+    "176822386504cec53a",
     "main"
   ]
 }
