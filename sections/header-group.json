@@ -121,7 +121,8 @@
             "badge_color": "",
             "badge_text_color": "",
             "icon_style": "heart",
-            "icon_color": ""
+            "icon_color": "",
+            "hide_for_guests": false
           }
         }
       },
