@@ -115,20 +115,24 @@
       "blocks": {
         "nn_favorites_header_icon_TiirDR": {
           "type": "shopify://apps/nn-favorites/blocks/header-icon/019b0dbf-b4a8-7f29-9f26-3c82f286fb59",
+          "disabled": true,
           "settings": {
             "list_type": "favorites",
+            "show_label": false,
+            "label": "Favorites",
+            "login_label": "Log in to save favorites",
             "show_badge": true,
             "badge_color": "",
             "badge_text_color": "",
             "icon_style": "heart",
-            "icon_color": "",
-            "hide_for_guests": false
+            "icon_color": ""
           }
         }
       },
       "block_order": [
         "nn_favorites_header_icon_TiirDR"
       ],
+      "disabled": true,
       "settings": {
         "content_direction": "column",
         "vertical_on_mobile": true,
