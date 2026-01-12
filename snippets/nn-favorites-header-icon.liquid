@@ -179,22 +179,16 @@
 
 {% javascript %}
   class NnFavoritesHeaderIcon extends HTMLElement {
-    #bubble = null;
-    #bubbleCount = null;
     #link = null;
 
     get bubble() {
-      if (!this.#bubble) {
-        this.#bubble = this.querySelector('[ref="bubble"]');
-      }
-      return this.#bubble;
+      // Always query fresh to avoid stale references after DOM updates
+      return this.querySelector('[ref="bubble"]');
     }
 
     get bubbleCount() {
-      if (!this.#bubbleCount) {
-        this.#bubbleCount = this.querySelector('[ref="bubbleCount"]');
-      }
-      return this.#bubbleCount;
+      // Always query fresh to avoid stale references after DOM updates
+      return this.querySelector('[ref="bubbleCount"]');
     }
 
     get link() {
@@ -226,8 +220,6 @@
 
     disconnectedCallback() {
       document.removeEventListener('nn:list-toggle', this.handleListToggle);
-      this.#bubble = null;
-      this.#bubbleCount = null;
       this.#link = null;
     }
 
@@ -250,7 +242,9 @@
     updateBubble(count) {
       this.currentCount = count;
       
+      // Toggle visibility classes
       this.bubble?.classList.toggle('visually-hidden', count === 0);
+      this.bubbleCount?.classList.toggle('hidden', count === 0);
       this.classList.toggle('nn-favorites-header-icon--has-items', count > 0);
     }
   }
