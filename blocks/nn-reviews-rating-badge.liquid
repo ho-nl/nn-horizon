@@ -10,8 +10,9 @@
 
 {% liquid
   assign target_product = block.settings.product | default: closest.product | default: product
-  assign rating = target_product.metafields.near_native.review_rating.value
-  assign count = target_product.metafields.near_native.review_rating_count.value
+  # App-owned metafields - use resolved namespace for regular themes
+  assign rating = target_product.metafields['app--294319325185--reviews'].rating.value
+  assign count = target_product.metafields['app--294319325185--reviews'].rating_count.value
 
   # Build suffix text with product name placeholder
   assign suffix_text = block.settings.suffix

@@ -10,7 +10,8 @@
 
 {% liquid
   assign review_product = block.settings.product | default: closest.product | default: product
-  assign all_reviews = review_product.metafields.near_native.reviews.value
+  # App-owned metafields - use resolved namespace for regular themes
+  assign all_reviews = review_product.metafields['app--294319325185--reviews'].list.value
 
   # Parse URL parameters
   assign review_page = 1

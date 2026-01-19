@@ -4,11 +4,11 @@
   Container block for individual review items. Renders child blocks for
   each review component (author, rating, date, title, body, reply).
 
-  The review metaobject is accessed via closest.metaobject.nn_reviews which is
+  The review metaobject is accessed via closest.metaobject['app--294319325185--reviews'] which is
   passed from the parent section.
 
   @example
-  {% content_for 'block', type: 'nn-review-card', id: 'static-review-card', closest.metaobject.nn_reviews: review %}
+  {% content_for 'block', type: 'nn-review-card', id: 'static-review-card', closest.metaobject['app--294319325185--reviews']: review %}
 {% enddoc %}
 
 {% liquid
@@ -17,7 +17,7 @@
 %}
 
 {% capture children %}
-  {% content_for 'blocks', closest.metaobject.nn_reviews: closest.metaobject.nn_reviews %}
+  {% content_for 'blocks', closest.metaobject.app--294319325185--reviews: closest.metaobject.app--294319325185--reviews %}
 {% endcapture %}
 
 <div

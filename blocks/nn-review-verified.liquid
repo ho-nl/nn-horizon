@@ -2,15 +2,15 @@
   NN Review Verified Badge Block
 
   Displays a verification badge for verified buyers or reviewers.
-  Uses closest.metaobject.nn_reviews to access review data.
+  Uses closest.metaobject.app--294319325185--reviews to access review data.
 
   @example
-  Add this block inside a review card or any context with nn_reviews metaobject
+  Add this block inside a review card or any context with reviews metaobject
 {% enddoc %}
 
 {% liquid
   assign block_settings = block.settings
-  assign review = closest.metaobject.nn_reviews
+  assign review = closest.metaobject.app--294319325185--reviews
 
   assign is_verified_buyer = false
   assign is_verified_reviewer = false
@@ -89,7 +89,7 @@
   "settings": [
     {
       "type": "paragraph",
-      "content": "Displays a verified buyer/reviewer badge. Add inside a NN Review Card or context with nn_reviews."
+      "content": "Displays a verified buyer/reviewer badge. Add inside a NN Review Card or context with reviews metaobject."
     },
     {
       "type": "text",

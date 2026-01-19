@@ -2,15 +2,15 @@
   NN Review Date Block
 
   Displays the date when the review was submitted.
-  Uses closest.metaobject.nn_reviews to access review data.
+  Uses closest.metaobject.app--294319325185--reviews to access review data.
 
   @example
-  Add this block inside a review card or any context with nn_reviews metaobject
+  Add this block inside a review card or any context with reviews metaobject
 {% enddoc %}
 
 {% liquid
   assign block_settings = block.settings
-  assign review = closest.metaobject.nn_reviews
+  assign review = closest.metaobject.app--294319325185--reviews
   assign submitted_at = review.submitted_at.value
 
   assign text_width = block_settings.width
@@ -83,7 +83,7 @@
   "settings": [
     {
       "type": "paragraph",
-      "content": "Displays the submission date from a review metaobject. Add inside a NN Review Card or context with nn_reviews."
+      "content": "Displays the submission date from a review metaobject. Add inside a NN Review Card or context with reviews metaobject."
     },
     {
       "type": "select",

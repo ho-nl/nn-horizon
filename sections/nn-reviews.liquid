@@ -15,7 +15,8 @@
     assign review_product = product
   endif
 
-  assign all_reviews = review_product.metafields.near_native.reviews.value
+  # App-owned metafields - use resolved namespace for regular themes
+  assign all_reviews = review_product.metafields['app--294319325185--reviews'].list.value
 
   # Parse URL parameters for pagination and sorting
   assign review_page = 1
@@ -118,7 +119,7 @@
     {% capture list_items %}
       {% for review in sorted_reviews limit: max_display offset: start_index %}
         <div class="resource-list__item">
-          {% content_for 'block', type: 'nn-review-card', id: 'static-review-card', closest.metaobject.nn_reviews: review %}
+          {% content_for 'block', type: 'nn-review-card', id: 'static-review-card', closest.metaobject.app--294319325185--reviews: review %}
         </div>
         {% unless forloop.last %}
           <!--@list/split-->
@@ -450,7 +451,7 @@
                 "author": {
                   "type": "text",
                   "settings": {
-                    "text": "<p>{{ closest.metaobject.nn_reviews.author_display_name.value }}</p>",
+                    "text": "<p>{{ closest.metaobject['app--294319325185--reviews'].author_display_name.value }}</p>",
                     "type_preset": "h5"
                   }
                 },
@@ -463,7 +464,7 @@
             "title": {
               "type": "text",
               "settings": {
-                "text": "<h5>{{ closest.metaobject.nn_reviews.title.value }}</h5>",
+                "text": "<h5>{{ closest.metaobject['app--294319325185--reviews'].title.value }}</h5>",
                 "type_preset": "h5",
                 "font": "var(--font-heading--family)",
                 "color": "var(--color-foreground-heading)"
@@ -480,7 +481,7 @@
                 "body_text": {
                   "type": "text",
                   "settings": {
-                    "text": "{{ closest.metaobject.nn_reviews.body | metafield_tag }}"
+                    "text": "{{ closest.metaobject['app--294319325185--reviews'].body | metafield_tag }}"
                   }
                 }
               },

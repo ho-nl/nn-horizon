@@ -2,15 +2,15 @@
   NN Review Merchant Reply Block
 
   Displays the merchant's reply to a review.
-  Uses closest.metaobject.nn_reviews to access review data.
+  Uses closest.metaobject.app--294319325185--reviews to access review data.
 
   @example
-  Add this block inside a review card or any context with nn_reviews metaobject
+  Add this block inside a review card or any context with reviews metaobject
 {% enddoc %}
 
 {% liquid
   assign block_settings = block.settings
-  assign review = closest.metaobject.nn_reviews
+  assign review = closest.metaobject.app--294319325185--reviews
   assign reply = review.merchant_reply
   assign replied_at = review.merchant_replied_at.value
 
@@ -117,7 +117,7 @@
   "settings": [
     {
       "type": "paragraph",
-      "content": "Displays the merchant reply from a review metaobject. Add inside a NN Review Card or context with nn_reviews."
+      "content": "Displays the merchant reply from a review metaobject. Add inside a NN Review Card or context with reviews metaobject."
     },
     {
       "type": "checkbox",
