@@ -47,7 +47,6 @@
       </div>
     </anchored-popover-component>
     
-    {% comment %} 
     {% render 'nn-favorites-header-icon'
       label: 'Favorites',
       login_label: 'Log in to save favorites',
@@ -55,8 +54,8 @@
       icon_asset: 'nn-favorites-icon-heart.svg',
       show_count: true,
       hide_for_guests: true
-    %} {% endcomment %}
-
+    %}
+    
     <dialog-component
       class="account-drawer"
       {{ block.shopify_attributes }}
