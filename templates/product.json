@@ -370,6 +370,17 @@
               },
               "blocks": {}
             },
+            "nn_reviews_rating_badge_qBBNxA": {
+              "type": "shopify://apps/nn-reviews/blocks/rating-badge/019a6cea-ecb9-72a3-8e2c-425c60c01f4c",
+              "settings": {
+                "product": "{{closest.product}}",
+                "hide_when_empty": false,
+                "show_stars": true,
+                "show_rating_value": true,
+                "show_count": true,
+                "star_color": "#ffc107"
+              }
+            },
             "price_gLWgA6": {
               "type": "price",
               "settings": {
@@ -396,6 +407,7 @@
           "block_order": [
             "product_card_gallery_DNizbJ",
             "product_title_M7MJkb",
+            "nn_reviews_rating_badge_qBBNxA",
             "price_gLWgA6"
           ]
         }
