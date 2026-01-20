@@ -480,10 +480,10 @@
         "padding-block-end": 48
       }
     },
-    "nn_reviews_MAVtDm": {
+    "nn_reviews_wbHQPL": {
       "type": "nn-reviews",
       "blocks": {
-        "nn_reviews_pagination_Fxhb7G": {
+        "nn_reviews_pagination_YJhULY": {
           "type": "nn-reviews-pagination",
           "settings": {
             "product": "{{ product }}",
@@ -499,7 +499,7 @@
           "static": true,
           "settings": {},
           "blocks": {
-            "group_hqMq7H": {
+            "group_mVXbch": {
               "type": "group",
               "settings": {
                 "content_direction": "row",
@@ -538,7 +538,7 @@
                 "padding-inline-end": 0
               },
               "blocks": {
-                "nn_reviews_rating_badge_QbMUpX": {
+                "nn_reviews_rating_badge_jtG8Lc": {
                   "type": "nn-reviews-rating-badge",
                   "settings": {
                     "product": "{{ product }}",
@@ -546,7 +546,7 @@
                     "show_stars": true,
                     "show_rating_value": true,
                     "show_count": true,
-                    "suffix": "for {{product.title}}",
+                    "suffix": "for {{ product.title }}",
                     "star_color": "#ffc107",
                     "width": "fit-content",
                     "max_width": "none",
@@ -562,7 +562,7 @@
                   },
                   "blocks": {}
                 },
-                "nn_reviews_form_VC7VMY": {
+                "nn_reviews_form_g4czkN": {
                   "type": "nn-reviews-form",
                   "settings": {
                     "product": "{{ product }}",
@@ -578,13 +578,13 @@
                 }
               },
               "block_order": [
-                "nn_reviews_rating_badge_QbMUpX",
-                "nn_reviews_form_VC7VMY"
+                "nn_reviews_rating_badge_jtG8Lc",
+                "nn_reviews_form_g4czkN"
               ]
             }
           },
           "block_order": [
-            "group_hqMq7H"
+            "group_mVXbch"
           ]
         },
         "static-review-card": {
@@ -602,7 +602,7 @@
             "padding-inline-end": 0
           },
           "blocks": {
-            "group_J6F4QR": {
+            "group_jn64Uh": {
               "type": "group",
               "settings": {
                 "content_direction": "row",
@@ -641,7 +641,7 @@
                 "padding-inline-end": 0
               },
               "blocks": {
-                "text_GVhJTJ": {
+                "text_fDrCGV": {
                   "type": "text",
                   "settings": {
                     "text": "<p>{{ closest.metaobject['app--294319325185--reviews'].author_display_name.value }}</p>",
@@ -666,7 +666,7 @@
                   },
                   "blocks": {}
                 },
-                "nn_review_rating_DLUht9": {
+                "nn_review_rating_AyeTnW": {
                   "type": "nn-review-rating",
                   "settings": {
                     "stars_style": "shaded",
@@ -687,7 +687,7 @@
                   },
                   "blocks": {}
                 },
-                "nn_review_verified_VRyqDV": {
+                "nn_review_verified_CmRf3a": {
                   "type": "nn-review-verified",
                   "settings": {
                     "verified_buyer_text": "Verified Buyer",
@@ -705,7 +705,7 @@
                   },
                   "blocks": {}
                 },
-                "nn_review_date_jHTwMf": {
+                "nn_review_date_eGrfxy": {
                   "type": "nn-review-date",
                   "settings": {
                     "format": "full",
@@ -725,13 +725,13 @@
                 }
               },
               "block_order": [
-                "text_GVhJTJ",
-                "nn_review_rating_DLUht9",
-                "nn_review_verified_VRyqDV",
-                "nn_review_date_jHTwMf"
+                "text_fDrCGV",
+                "nn_review_rating_AyeTnW",
+                "nn_review_verified_CmRf3a",
+                "nn_review_date_eGrfxy"
               ]
             },
-            "text_9C4yWB": {
+            "text_j9XYCi": {
               "type": "text",
               "settings": {
                 "text": "<h5>{{ closest.metaobject['app--294319325185--reviews'].title.value }}</h5>",
@@ -756,7 +756,7 @@
               },
               "blocks": {}
             },
-            "nn_review_read_more_zhA6QA": {
+            "nn_review_read_more_VeNzaE": {
               "type": "nn-review-read-more",
               "settings": {
                 "max_lines": 4,
@@ -764,7 +764,7 @@
                 "read_less_text": "Read less"
               },
               "blocks": {
-                "text_HbDHPg": {
+                "text_FN4XAh": {
                   "type": "text",
                   "settings": {
                     "text": "{{ closest.metaobject['app--294319325185--reviews'].body | metafield_tag }}",
@@ -791,10 +791,10 @@
                 }
               },
               "block_order": [
-                "text_HbDHPg"
+                "text_FN4XAh"
               ]
             },
-            "nn_review_reply_jiLqB3": {
+            "nn_review_reply_CALezM": {
               "type": "nn-review-reply",
               "settings": {
                 "show_label": true,
@@ -818,15 +818,15 @@
             }
           },
           "block_order": [
-            "group_J6F4QR",
-            "text_9C4yWB",
-            "nn_review_read_more_zhA6QA",
-            "nn_review_reply_jiLqB3"
+            "group_jn64Uh",
+            "text_j9XYCi",
+            "nn_review_read_more_VeNzaE",
+            "nn_review_reply_CALezM"
           ]
         }
       },
       "block_order": [
-        "nn_reviews_pagination_Fxhb7G"
+        "nn_reviews_pagination_YJhULY"
       ],
       "name": "NN Reviews List",
       "settings": {
@@ -855,6 +855,6 @@
   "order": [
     "main",
     "product_recommendations_qggXJq",
-    "nn_reviews_MAVtDm"
+    "nn_reviews_wbHQPL"
   ]
 }
