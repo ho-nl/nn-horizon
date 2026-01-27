@@ -279,6 +279,22 @@
               },
               "block_order": []
             },
+            "nn_favorites_toggle_button_TphqWx": {
+              "type": "shopify://apps/nn-favorites/blocks/toggle-button/019b0dbf-b4a8-7f29-9f26-3c82f286fb59",
+              "settings": {
+                "product": "{{product}}",
+                "list_type": "favorites",
+                "display_style": "inline",
+                "style_class": "button-unstyled",
+                "show_label": true,
+                "add_label": "Add to list",
+                "remove_label": "Remove from list",
+                "show_when_logged_out": true,
+                "login_label": "Log in to save",
+                "add_icon": "heart",
+                "active_color": "#e53935"
+              }
+            },
             "text_aEtTtq": {
               "type": "text",
               "name": "Product description",
@@ -311,6 +327,7 @@
             "divider_VJhene",
             "variant_picker_R3rGDr",
             "buy_buttons_eYQEYi",
+            "nn_favorites_toggle_button_TphqWx",
             "text_aEtTtq"
           ]
         }
@@ -850,11 +867,42 @@
         "padding-block-start": 48,
         "padding-block-end": 48
       }
+    },
+    "1769521967a5114a38": {
+      "type": "_blocks",
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "color_scheme": "",
+        "background_media": "none",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
     }
   },
   "order": [
     "main",
     "product_recommendations_qggXJq",
-    "nn_reviews_wbHQPL"
+    "nn_reviews_wbHQPL",
+    "1769521967a5114a38"
   ]
 }
