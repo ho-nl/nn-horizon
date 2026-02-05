@@ -497,381 +497,77 @@
         "padding-block-end": 48
       }
     },
-    "nn_reviews_wbHQPL": {
-      "type": "nn-reviews",
+    "177027813706401306": {
+      "type": "_blocks",
       "blocks": {
-        "nn_reviews_pagination_YJhULY": {
-          "type": "nn-reviews-pagination",
+        "nn_reviews_product_reviews_HQiYKk": {
+          "type": "shopify://apps/nn-reviews/blocks/product-reviews/019a6cea-ecb9-72a3-8e2c-425c60c01f4c",
           "settings": {
-            "product": "{{ product }}",
-            "style": "simple",
+            "product": "{{product}}",
+            "show_heading": true,
+            "heading": "Customer Reviews",
+            "heading_tag": "h3",
+            "show_badge": true,
+            "badge_show_stars": true,
+            "badge_show_rating": true,
+            "badge_show_count": true,
+            "layout": "list",
+            "card_style": "bordered",
+            "show_sort": true,
+            "default_sort": "newest",
+            "show_pagination": true,
             "reviews_per_page": 10,
-            "scroll_target": "nn-reviews",
-            "type_preset": "paragraph"
-          },
-          "blocks": {}
-        },
-        "static-header": {
-          "type": "_nn-reviews-header",
-          "static": true,
-          "settings": {},
-          "blocks": {
-            "group_mVXbch": {
-              "type": "group",
-              "settings": {
-                "content_direction": "row",
-                "vertical_on_mobile": true,
-                "horizontal_alignment": "space-between",
-                "vertical_alignment": "center",
-                "align_baseline": false,
-                "horizontal_alignment_flex_direction_column": "flex-start",
-                "vertical_alignment_flex_direction_column": "center",
-                "gap": 12,
-                "width": "fill",
-                "custom_width": 100,
-                "width_mobile": "fill",
-                "custom_width_mobile": 100,
-                "height": "fit",
-                "custom_height": 100,
-                "inherit_color_scheme": true,
-                "color_scheme": "",
-                "background_media": "none",
-                "video_position": "cover",
-                "background_image_position": "cover",
-                "border": "none",
-                "border_width": 1,
-                "border_opacity": 100,
-                "border_radius": 0,
-                "toggle_overlay": false,
-                "overlay_color": "#00000026",
-                "overlay_style": "solid",
-                "gradient_direction": "to top",
-                "link": "",
-                "open_in_new_tab": false,
-                "placeholder": "",
-                "padding-block-start": 0,
-                "padding-block-end": 30,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {
-                "nn_reviews_rating_badge_jtG8Lc": {
-                  "type": "nn-reviews-rating-badge",
-                  "settings": {
-                    "product": "{{ product }}",
-                    "hide_when_empty": false,
-                    "show_stars": true,
-                    "show_rating_value": true,
-                    "show_count": true,
-                    "suffix": "for {{ product.title }}",
-                    "star_color": "#ffc107",
-                    "width": "fit-content",
-                    "max_width": "none",
-                    "alignment": "left",
-                    "type_preset": "h3",
-                    "font": "var(--font-body--family)",
-                    "font_size": "1rem",
-                    "line_height": "normal",
-                    "letter_spacing": "normal",
-                    "case": "none",
-                    "wrap": "pretty",
-                    "color": "var(--color-foreground)"
-                  },
-                  "blocks": {}
-                },
-                "nn_reviews_form_g4czkN": {
-                  "type": "nn-reviews-form",
-                  "settings": {
-                    "product": "{{ product }}",
-                    "button_text": "Write a Review",
-                    "heading": "Write a Review",
-                    "show_description": true,
-                    "description": "Share your experience with this product",
-                    "star_color": "#ffc107",
-                    "heading_type_preset": "h3",
-                    "form_type_preset": "paragraph"
-                  },
-                  "blocks": {}
-                }
-              },
-              "block_order": [
-                "nn_reviews_rating_badge_jtG8Lc",
-                "nn_reviews_form_g4czkN"
-              ]
-            }
-          },
-          "block_order": [
-            "group_mVXbch"
-          ]
-        },
-        "static-review-card": {
-          "type": "nn-review-card",
-          "static": true,
-          "settings": {
-            "card_style": "separator",
-            "border_radius": 8,
-            "gap": 12,
-            "inherit_color_scheme": true,
-            "color_scheme": "",
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {
-            "group_jn64Uh": {
-              "type": "group",
-              "settings": {
-                "content_direction": "row",
-                "vertical_on_mobile": true,
-                "horizontal_alignment": "flex-start",
-                "vertical_alignment": "center",
-                "align_baseline": false,
-                "horizontal_alignment_flex_direction_column": "flex-start",
-                "vertical_alignment_flex_direction_column": "center",
-                "gap": 8,
-                "width": "fill",
-                "custom_width": 100,
-                "width_mobile": "fill",
-                "custom_width_mobile": 100,
-                "height": "fit",
-                "custom_height": 100,
-                "inherit_color_scheme": true,
-                "color_scheme": "",
-                "background_media": "none",
-                "video_position": "cover",
-                "background_image_position": "cover",
-                "border": "none",
-                "border_width": 1,
-                "border_opacity": 100,
-                "border_radius": 0,
-                "toggle_overlay": false,
-                "overlay_color": "#00000026",
-                "overlay_style": "solid",
-                "gradient_direction": "to top",
-                "link": "",
-                "open_in_new_tab": false,
-                "placeholder": "",
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {
-                "text_fDrCGV": {
-                  "type": "text",
-                  "settings": {
-                    "text": "<p>{{ closest.metaobject['app--294319325185--reviews'].author_display_name.value }}</p>",
-                    "width": "fit-content",
-                    "max_width": "normal",
-                    "alignment": "left",
-                    "type_preset": "h5",
-                    "font": "var(--font-body--family)",
-                    "font_size": "1rem",
-                    "line_height": "normal",
-                    "letter_spacing": "normal",
-                    "case": "none",
-                    "wrap": "pretty",
-                    "color": "var(--color-foreground)",
-                    "background": false,
-                    "background_color": "#00000026",
-                    "corner_radius": 0,
-                    "padding-block-start": 0,
-                    "padding-block-end": 0,
-                    "padding-inline-start": 0,
-                    "padding-inline-end": 0
-                  },
-                  "blocks": {}
-                },
-                "nn_review_rating_AyeTnW": {
-                  "type": "nn-review-rating",
-                  "settings": {
-                    "stars_style": "shaded",
-                    "show_number": false,
-                    "scale_max": 5,
-                    "rating_color": "gold",
-                    "width": "fit-content",
-                    "max_width": "normal",
-                    "alignment": "left",
-                    "type_preset": "paragraph",
-                    "font": "var(--font-body--family)",
-                    "font_size": "1rem",
-                    "line_height": "normal",
-                    "letter_spacing": "normal",
-                    "case": "none",
-                    "wrap": "pretty",
-                    "color": "var(--color-foreground)"
-                  },
-                  "blocks": {}
-                },
-                "nn_review_verified_CmRf3a": {
-                  "type": "nn-review-verified",
-                  "settings": {
-                    "verified_buyer_text": "Verified Buyer",
-                    "verified_reviewer_text": "Verified Reviewer",
-                    "icon_style": "icon",
-                    "style": "success",
-                    "type_preset": "paragraph",
-                    "font": "var(--font-body--family)",
-                    "font_size": "1rem",
-                    "line_height": "normal",
-                    "letter_spacing": "normal",
-                    "case": "none",
-                    "wrap": "pretty",
-                    "color": "var(--color-foreground)"
-                  },
-                  "blocks": {}
-                },
-                "nn_review_date_eGrfxy": {
-                  "type": "nn-review-date",
-                  "settings": {
-                    "format": "full",
-                    "width": "fit-content",
-                    "max_width": "normal",
-                    "alignment": "left",
-                    "type_preset": "paragraph",
-                    "font": "var(--font-body--family)",
-                    "font_size": "1rem",
-                    "line_height": "normal",
-                    "letter_spacing": "normal",
-                    "case": "none",
-                    "wrap": "pretty",
-                    "color": "var(--color-foreground)"
-                  },
-                  "blocks": {}
-                }
-              },
-              "block_order": [
-                "text_fDrCGV",
-                "nn_review_rating_AyeTnW",
-                "nn_review_verified_CmRf3a",
-                "nn_review_date_eGrfxy"
-              ]
-            },
-            "text_j9XYCi": {
-              "type": "text",
-              "settings": {
-                "text": "<h5>{{ closest.metaobject['app--294319325185--reviews'].title.value }}</h5>",
-                "width": "fit-content",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "h5",
-                "font": "var(--font-heading--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "color": "var(--color-foreground-heading)",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "nn_review_read_more_VeNzaE": {
-              "type": "nn-review-read-more",
-              "settings": {
-                "max_lines": 4,
-                "read_more_text": "Read more",
-                "read_less_text": "Read less"
-              },
-              "blocks": {
-                "text_FN4XAh": {
-                  "type": "text",
-                  "settings": {
-                    "text": "{{ closest.metaobject['app--294319325185--reviews'].body | metafield_tag }}",
-                    "width": "fit-content",
-                    "max_width": "normal",
-                    "alignment": "left",
-                    "type_preset": "rte",
-                    "font": "var(--font-body--family)",
-                    "font_size": "1rem",
-                    "line_height": "normal",
-                    "letter_spacing": "normal",
-                    "case": "none",
-                    "wrap": "pretty",
-                    "color": "var(--color-foreground)",
-                    "background": false,
-                    "background_color": "#00000026",
-                    "corner_radius": 0,
-                    "padding-block-start": 0,
-                    "padding-block-end": 0,
-                    "padding-inline-start": 0,
-                    "padding-inline-end": 0
-                  },
-                  "blocks": {}
-                }
-              },
-              "block_order": [
-                "text_FN4XAh"
-              ]
-            },
-            "nn_review_reply_CALezM": {
-              "type": "nn-review-reply",
-              "settings": {
-                "show_label": true,
-                "label_text": "Response from store:",
-                "show_date": true,
-                "padding": 16,
-                "border_radius": 4,
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "paragraph",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "color": "var(--color-foreground)"
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "group_jn64Uh",
-            "text_j9XYCi",
-            "nn_review_read_more_VeNzaE",
-            "nn_review_reply_CALezM"
-          ]
+            "body_max_lines": 4,
+            "show_author": true,
+            "show_date": true,
+            "show_verified": true,
+            "show_merchant_reply": true,
+            "merchant_reply_label": "Response from store:",
+            "no_reviews_text": "No reviews yet. Be the first to review this product!",
+            "show_form": true,
+            "form_button_text": "Write a Review",
+            "form_heading": "Write a Review",
+            "form_show_description": true,
+            "form_description": "Share your experience with this product",
+            "star_color": "#ffc107"
+          }
         }
       },
       "block_order": [
-        "nn_reviews_pagination_YJhULY"
+        "nn_reviews_product_reviews_HQiYKk"
       ],
-      "name": "NN Reviews List",
       "settings": {
-        "product": "{{ product }}",
-        "layout_type": "grid",
-        "carousel_on_mobile": false,
-        "columns": 1,
-        "mobile_columns": "1",
-        "mobile_card_size": "60cqw",
-        "columns_gap": 16,
-        "bento_gap": 16,
-        "rows_gap": 16,
-        "icons_style": "arrow",
-        "show_dots": false,
-        "show_progress": false,
-        "reviews_per_page": 10,
-        "no_reviews_text": "No reviews yet. Be the first to review this product!",
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
         "section_width": "page-width",
-        "gap": 24,
+        "section_height": "",
+        "section_height_custom": 50,
         "color_scheme": "",
-        "padding-block-start": 48,
-        "padding-block-end": 48
+        "background_media": "none",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "padding-block-start": 0,
+        "padding-block-end": 0
       }
     }
   },
   "order": [
     "main",
     "product_recommendations_qggXJq",
-    "nn_reviews_wbHQPL"
+    "177027813706401306"
   ]
 }
