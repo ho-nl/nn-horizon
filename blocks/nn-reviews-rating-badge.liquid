@@ -63,7 +63,7 @@
   "
   {{ block.shopify_attributes }}
 >
-  {%- render 'nn-rating-badge',
+  {%- render 'nn-reviews-rating-badge',
     rating: rating,
     count: count,
     star_color: block.settings.star_color,
@@ -76,25 +76,25 @@
 </span>
 
 {% stylesheet %}
-  .nn-rating-stars {
+  .nn-reviews-rating-stars {
     display: inline;
     white-space: nowrap;
   }
 
-  .nn-rating-stars__star {
+  .nn-reviews-rating-stars__star {
     display: inline;
     line-height: 1;
   }
 
-  .nn-rating-stars__star--filled {
+  .nn-reviews-rating-stars__star--filled {
     color: var(--star-color, #ffc107);
   }
 
-  .nn-rating-stars__star--partial {
+  .nn-reviews-rating-stars__star--partial {
     position: relative;
   }
 
-  .nn-rating-stars__star--partial::before {
+  .nn-reviews-rating-stars__star--partial::before {
     content: '★';
     position: absolute;
     left: 0;

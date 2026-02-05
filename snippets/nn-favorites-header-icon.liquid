@@ -36,7 +36,8 @@
   assign metafield_key = 'product_list_' | append: safe_list_type
   
   # Get customer's collection and item count
-  assign customer_collection = customer.metafields.near_native[metafield_key].value
+  # App-owned metafields - use resolved namespace for regular themes (replace YOUR_APP_ID with actual numeric app ID)
+  assign customer_collection = customer.metafields['app--302942060545--favorites'][metafield_key].value
   assign item_count = 0
 
   if customer_collection

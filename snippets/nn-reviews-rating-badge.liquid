@@ -22,15 +22,15 @@
 {% assign count = count | default: 0 %}
 
 {% if count > 0 or hide_when_empty == false %}
-  <span class="nn-rating-badge {{ preset }}"
+  <span class="nn-reviews-rating-badge {{ preset }}"
     >{%- if show_stars == true -%}
-      {%- render 'nn-rating-stars', rating: rating, scale_max: scale_max, star_color: star_color -%}
+      {%- render 'nn-reviews-rating-stars', rating: rating, scale_max: scale_max, star_color: star_color -%}
     {%- endif -%}
-    {%- if show_rating_value == true and count > 0 %} <span class="nn-rating-badge__value"
-        >{{- rating -}}<span class="nn-rating-badge__max">/{{ scale_max }}</span></span
+    {%- if show_rating_value == true and count > 0 %} <span class="nn-reviews-rating-badge__value"
+        >{{- rating -}}<span class="nn-reviews-rating-badge__max">/{{ scale_max }}</span></span
       >
     {%- endif -%}
-    {%- if show_count == true %} <span class="nn-rating-badge__count"
+    {%- if show_count == true %} <span class="nn-reviews-rating-badge__count"
         >{%- if count == 0 -%}
           No reviews
         {%- elsif count == 1 -%}
@@ -40,7 +40,7 @@
         {%- endif -%}</span
       >
     {%- endif -%}
-    {%- if suffix != blank %} <span class="nn-rating-badge__suffix">{{ suffix }}</span>
+    {%- if suffix != blank %} <span class="nn-reviews-rating-badge__suffix">{{ suffix }}</span>
     {%- endif -%}</span
   >
 {% endif %}

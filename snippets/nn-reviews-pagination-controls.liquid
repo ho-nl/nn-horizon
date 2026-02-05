@@ -1,0 +1,360 @@
+{%- doc -%}
+  Renders pagination controls for NN Reviews.
+  Mirrors the Horizon pagination-controls snippet but uses custom URL parameters
+  for reviews sorting and pagination.
+
+  @param {number} current_page - Current page number
+  @param {number} total_pages - Total number of pages
+  @param {string} base_url - Base URL for the product
+  @param {string} active_sort - Current sort value (newest, oldest, highest_rating, lowest_rating)
+  @param {string} [scroll_target] - Element ID to scroll to (default: 'nn-reviews')
+
+  @example
+  {%- render 'nn-reviews-pagination-controls',
+    current_page: current_page,
+    total_pages: total_pages,
+    base_url: product.url,
+    active_sort: active_sort,
+    scroll_target: 'nn-reviews'
+  -%}
+{%- enddoc -%}
+
+{%- liquid
+  assign scroll_target = scroll_target | default: 'nn-reviews'
+  
+  # Window size for page numbers (shows 2 pages on each side of current)
+  assign window_size = 2
+  assign window_start = current_page | minus: window_size
+  assign window_end = current_page | plus: window_size
+  
+  # Adjust window bounds
+  if window_start < 1
+    assign window_start = 1
+  endif
+  if window_end > total_pages
+    assign window_end = total_pages
+  endif
+-%}
+
+{%- if total_pages > 1 -%}
+  <nav
+    class="pagination"
+    aria-label="Reviews pagination"
+    data-current_page="{{ current_page }}"
+  >
+    <ul class="pagination__list" role="list">
+      {%- comment -%} Previous button {%- endcomment -%}
+      <li class="pagination__item">
+        {%- if current_page > 1 -%}
+          {%- assign prev_page = current_page | minus: 1 -%}
+          <a
+            href="{{ base_url }}/nn_reviews_sort={{ active_sort }}&nn_reviews_page={{ prev_page }}#{{ scroll_target }}"
+            aria-label="Previous page"
+            class="pagination__link pagination__link--arrow"
+          >
+            {{ 'icon-chevron-left.svg' | inline_asset_content }}
+          </a>
+        {%- else -%}
+          <span
+            aria-label="Previous page"
+            class="pagination__link pagination__link--arrow pagination__link--disabled"
+            aria-disabled="true"
+          >
+            {{ 'icon-chevron-left.svg' | inline_asset_content }}
+          </span>
+        {%- endif -%}
+      </li>
+
+      {%- comment -%} First page (if not in window) {%- endcomment -%}
+      {%- if window_start > 1 -%}
+        <li class="pagination__item">
+          <a
+            href="{{ base_url }}/nn_reviews_sort={{ active_sort }}&nn_reviews_page=1#{{ scroll_target }}"
+            aria-label="Page 1"
+            class="pagination__link pagination__link--page"
+          >
+            1
+          </a>
+        </li>
+        {%- if window_start > 2 -%}
+          <li class="pagination__item pagination__item--gap">
+            <span class="pagination__link pagination__link--gap" aria-hidden="true">&hellip;</span>
+          </li>
+        {%- endif -%}
+      {%- endif -%}
+
+      {%- comment -%} Page number window {%- endcomment -%}
+      {%- for i in (window_start..window_end) -%}
+        {%- liquid
+          assign distance_from_current = i | minus: current_page | abs
+          assign should_hide_on_mobile = false
+          if i != 1 and i != total_pages and distance_from_current > 1
+            assign should_hide_on_mobile = true
+          endif
+        -%}
+        <li class="pagination__item{% if should_hide_on_mobile %} pagination__item--mobile-hide{% endif %}">
+          {%- if i == current_page -%}
+            <span
+              class="pagination__link pagination__link--page pagination__link--current"
+              aria-current="page"
+            >
+              {{ i }}
+            </span>
+          {%- else -%}
+            <a
+              href="{{ base_url }}/nn_reviews_sort={{ active_sort }}&nn_reviews_page={{ i }}#{{ scroll_target }}"
+              aria-label="Page {{ i }}"
+              class="pagination__link pagination__link--page"
+            >
+              {{ i }}
+            </a>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+
+      {%- comment -%} Last page (if not in window) {%- endcomment -%}
+      {%- if window_end < total_pages -%}
+        {%- assign before_last = total_pages | minus: 1 -%}
+        {%- if window_end < before_last -%}
+          <li class="pagination__item pagination__item--gap">
+            <span class="pagination__link pagination__link--gap" aria-hidden="true">&hellip;</span>
+          </li>
+        {%- endif -%}
+        <li class="pagination__item">
+          <a
+            href="{{ base_url }}/nn_reviews_sort={{ active_sort }}&nn_reviews_page={{ total_pages }}#{{ scroll_target }}"
+            aria-label="Page {{ total_pages }}"
+            class="pagination__link pagination__link--page"
+          >
+            {{ total_pages }}
+          </a>
+        </li>
+      {%- endif -%}
+
+      {%- comment -%} Next button {%- endcomment -%}
+      <li class="pagination__item">
+        {%- if current_page < total_pages -%}
+          {%- assign next_page = current_page | plus: 1 -%}
+          <a
+            href="{{ base_url }}/nn_reviews_sort={{ active_sort }}&nn_reviews_page={{ next_page }}#{{ scroll_target }}"
+            aria-label="Next page"
+            class="pagination__link pagination__link--arrow"
+          >
+            {{ 'icon-chevron-right.svg' | inline_asset_content }}
+          </a>
+        {%- else -%}
+          <span
+            aria-label="Next page"
+            class="pagination__link pagination__link--arrow pagination__link--disabled"
+            aria-disabled="true"
+          >
+            {{ 'icon-chevron-right.svg' | inline_asset_content }}
+          </span>
+        {%- endif -%}
+      </li>
+    </ul>
+  </nav>
+{%- endif -%}
+
+{% stylesheet %}
+  .pagination {
+    --pagination-size: 36px;
+    --pagination-inset: 2px;
+    --pagination-radius: 6;
+
+    display: flex;
+    justify-content: center;
+    padding: var(--padding-xl) var(--padding-sm);
+    margin-top: var(--padding-xl);
+    position: relative;
+  }
+
+  .pagination__list {
+    display: flex;
+    gap: 0;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+  }
+
+  .pagination__item {
+    width: var(--pagination-size);
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+  }
+
+  .pagination__link {
+    display: grid;
+    place-items: center;
+    color: var(--color-foreground);
+    text-decoration: none;
+    width: 100%;
+    height: 100%;
+    user-select: none;
+    position: relative;
+    outline-color: var(--color-foreground);
+    -webkit-tap-highlight-color: transparent;
+    font-size: var(--font-size--md);
+    font-weight: var(--font-weight-normal);
+    border-radius: calc(var(--pagination-radius) * 1px);
+    transition: color var(--hover-transition-duration) var(--hover-transition-timing),
+      opacity var(--hover-transition-duration) var(--hover-transition-timing);
+  }
+
+  .pagination__link:focus-visible {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 2px;
+  }
+
+  .pagination__link--current {
+    color: var(--color-background);
+    font-weight: var(--font-weight-medium);
+    cursor: default;
+  }
+
+  .pagination__link--gap {
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .pagination__link--arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pagination__link--disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .pagination__link svg {
+    width: 0.5rem;
+    height: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .pagination__item--mobile-only {
+    display: none;
+  }
+
+  /* Fallback for browsers without anchor positioning support */
+  @supports not (anchor-name: --pagination-active) {
+    .pagination__link:not(.pagination__link--gap)::before {
+      content: '';
+      position: absolute;
+      inset: var(--pagination-inset);
+      border-radius: calc(var(--pagination-radius) * 1px);
+      background: rgb(var(--color-foreground-rgb) / var(--opacity-10));
+      z-index: -1;
+      opacity: 0;
+      transition: background var(--hover-transition-duration) var(--hover-transition-timing),
+        opacity var(--hover-transition-duration) var(--hover-transition-timing);
+    }
+
+    .pagination__link[aria-current='page']::before {
+      background: var(--color-foreground);
+      opacity: 1;
+    }
+
+    .pagination__link:hover:not([aria-current='page'], .pagination__link--gap, .pagination__link--disabled)::before {
+      opacity: 1;
+    }
+  }
+
+  /* Modern approach with anchor positioning */
+  @supports (anchor-name: --pagination-active) {
+    .pagination__list::before {
+      content: '';
+      z-index: -1;
+      position: absolute;
+      width: calc(var(--pagination-size) - (2 * var(--pagination-inset)));
+      aspect-ratio: 1;
+      pointer-events: none;
+      opacity: 0;
+      border-radius: calc(var(--pagination-radius) * 1px);
+      background: rgb(var(--color-foreground-rgb) / var(--opacity-10));
+      transition: left var(--hover-transition-duration) var(--hover-transition-timing),
+        top var(--hover-transition-duration) var(--hover-transition-timing);
+    }
+
+    /* Hide hover indicator on touch devices */
+    @media (hover: none) and (pointer: coarse) {
+      .pagination__list::before {
+        content: unset;
+      }
+    }
+
+    .pagination__list:has(
+        .pagination__link:is(:hover, :focus-visible):not(.pagination__link--gap, .pagination__link--disabled))::before {
+      opacity: 1;
+    }
+
+    /* Style current page directly */
+    .pagination__link[aria-current='page']::before {
+      content: '';
+      position: absolute;
+      inset: var(--pagination-inset);
+      border-radius: calc(var(--pagination-radius) * 1px);
+      background: var(--color-foreground);
+      z-index: -1;
+    }
+
+    .pagination__list
+      .pagination__item:has(
+        .pagination__link:is(:hover, :focus-visible):not(.pagination__link--gap, .pagination__link--disabled)) {
+      anchor-name: --pagination-hover;
+    }
+
+    /* Position hover indicator using anchor */
+    .pagination__list::before {
+      position-anchor: --pagination-hover;
+      left: calc(anchor(left) + var(--pagination-inset));
+      top: calc(anchor(top) + var(--pagination-inset));
+    }
+
+    .pagination__item:has(+ .pagination__item--gap) .pagination__link::after,
+    .pagination__item--gap + .pagination__item .pagination__link::after {
+      position: absolute;
+      content: '';
+      pointer-events: auto;
+    }
+
+    .pagination__item:has(+ .pagination__item--gap) .pagination__link::after {
+      inset: 0 -50% 0 100%;
+    }
+
+    .pagination__item--gap + .pagination__item .pagination__link::after {
+      inset: 0 100% 0 -50%;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .pagination {
+      --pagination-size: 44px;
+      --pagination-inset: 5px;
+
+      padding: var(--padding-lg) var(--padding-sm);
+    }
+
+    .pagination__link {
+      font-size: var(--font-size--sm);
+    }
+
+    .pagination__item--mobile-hide {
+      display: none;
+    }
+
+    .pagination__item--mobile-only {
+      display: grid;
+    }
+
+    .pagination__item:has(.pagination__link--gap) {
+      width: calc(var(--pagination-size) * 0.5);
+    }
+  }
+{% endstylesheet %}

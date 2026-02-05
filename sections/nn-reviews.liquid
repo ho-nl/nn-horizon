@@ -51,26 +51,27 @@
   endif
 
   # Sort reviews
-  assign sorted_reviews = all_reviews
-  if active_sort == 'oldest'
-    assign sorted_reviews = all_reviews | sort: 'submitted_at.value'
-  elsif active_sort == 'newest'
-    assign sorted_reviews = all_reviews | sort: 'submitted_at.value' | reverse
-  elsif active_sort == 'highest_rating'
-    assign sorted_reviews = all_reviews | sort: 'rating.value' | reverse
-  elsif active_sort == 'lowest_rating'
-    assign sorted_reviews = all_reviews | sort: 'rating.value'
-  endif
+  # Using paginate to bypass Liquid's 50-item limit on sort filter
+  paginate all_reviews by 250
+    if active_sort == 'oldest'
+      assign sorted_reviews = all_reviews | sort: 'submitted_at.value'
+    elsif active_sort == 'newest'
+      assign sorted_reviews = all_reviews | sort: 'submitted_at.value' | reverse
+    elsif active_sort == 'highest_rating'
+      assign sorted_reviews = all_reviews | sort: 'rating.value' | reverse
+    elsif active_sort == 'lowest_rating'
+      assign sorted_reviews = all_reviews | sort: 'rating.value'
+    else
+      assign sorted_reviews = all_reviews
+    endif
+  endpaginate
 
   # Pagination setup
   assign reviews_per_page = section.settings.reviews_per_page | default: 10
   assign current_page = review_page
 
-  # Count reviews
-  assign total_reviews = 0
-  for review in sorted_reviews
-    assign total_reviews = total_reviews | plus: 1
-  endfor
+  # Count reviews using size filter (for loops are limited to 50 iterations)
+  assign total_reviews = sorted_reviews | size
 
   assign total_pages = total_reviews | divided_by: reviews_per_page
   assign remainder = total_reviews | modulo: reviews_per_page
@@ -481,7 +482,7 @@
                 "body_text": {
                   "type": "text",
                   "settings": {
-                    "text": "{{ closest.metaobject['app--294319325185--reviews'].body | metafield_tag }}"
+                    "text": "<p>{{ closest.metaobject['app--294319325185--reviews'].content.value | newline_to_br }}</p>"
                   }
                 }
               },

@@ -11,7 +11,7 @@
 {% liquid
   assign block_settings = block.settings
   assign review = closest.metaobject.app--294319325185--reviews
-  assign reply = review.merchant_reply
+  assign reply = review.merchant_reply_content
   assign replied_at = review.merchant_replied_at.value
 
   assign text_width = block_settings.width
@@ -43,7 +43,7 @@
   endcapture
 %}
 
-{% if reply != blank %}
+{% if reply.value != blank %}
   <div
     class="nn-review-reply text-block {{ block_settings.type_preset }} {{ text_block_classes }}"
     style="
@@ -65,7 +65,7 @@
     {% endif %}
 
     <div class="nn-review-reply__content">
-      {{ reply | metafield_tag }}
+      {{ reply.value | newline_to_br }}
     </div>
 
     {% if block_settings.show_date and replied_at != blank %}

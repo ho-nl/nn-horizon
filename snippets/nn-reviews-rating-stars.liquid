@@ -15,24 +15,24 @@
 {% assign star_color = star_color | default: '#ffc107' %}
 {% assign scale_max = scale_max | default: 5 | times: 1 %}
 
-<span class="nn-rating-stars" style="--star-color: {{ star_color }};">
+<span class="nn-reviews-rating-stars" style="--star-color: {{ star_color }};">
   {% for i in (1..10) %}
     {% if i > scale_max %}{% break %}{% endif %}
     {% if i <= rating_floor %}
-      <span class="nn-rating-stars__star nn-rating-stars__star--filled">★</span>
+      <span class="nn-reviews-rating-stars__star nn-reviews-rating-stars__star--filled">★</span>
     {% elsif i == rating_next %}
       {% if rating_number != rating_floor %}
         {% assign decimal_part = rating_number | minus: rating_floor %}
         {% assign fill_range = decimal_part | times: 70 %}
         {% assign fill_percent = fill_range | plus: 15 | round %}
-        <span class="nn-rating-stars__star nn-rating-stars__star--partial" style="--fill-percent: {{ fill_percent }}%;"
+        <span class="nn-reviews-rating-stars__star nn-reviews-rating-stars__star--partial" style="--fill-percent: {{ fill_percent }}%;"
           >★</span
         >
       {% else %}
-        <span class="nn-rating-stars__star">★</span>
+        <span class="nn-reviews-rating-stars__star">★</span>
       {% endif %}
     {% else %}
-      <span class="nn-rating-stars__star">★</span>
+      <span class="nn-reviews-rating-stars__star">★</span>
     {% endif %}
   {% endfor %}
 </span>
