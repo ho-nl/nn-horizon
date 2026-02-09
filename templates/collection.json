@@ -216,30 +216,13 @@
                 "product_swatches_padding_right": 0
               },
               "blocks": {}
-            },
-            "nn_favorites_toggle_button_PBzyRK": {
-              "type": "shopify://apps/nn-favorites/blocks/toggle-button/019b0dbf-b4a8-7f29-9f26-3c82f286fb59",
-              "settings": {
-                "product": "{{ closest.product }}",
-                "list_type": "favorites",
-                "display_style": "inline",
-                "style_class": "button-unstyled",
-                "show_label": true,
-                "add_label": "Add to list",
-                "remove_label": "Remove from list",
-                "show_when_logged_out": true,
-                "login_label": "Add to list",
-                "add_icon": "heart",
-                "active_color": "#e53935"
-              }
             }
           },
           "block_order": [
             "card-gallery",
             "product_title_4nY4eT",
             "price_EzJzMm",
-            "swatches",
-            "nn_favorites_toggle_button_PBzyRK"
+            "swatches"
           ]
         }
       },
