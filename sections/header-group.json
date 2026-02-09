@@ -117,12 +117,14 @@
           "type": "shopify://apps/nn-favorites/blocks/header-icon/019b0dbf-b4a8-7f29-9f26-3c82f286fb59",
           "settings": {
             "list_type": "favorites",
-            "show_badge": true,
+            "show_count": true,
+            "hide_for_guests": false,
+            "variant": "link",
+            "link_text": "",
             "badge_color": "",
             "badge_text_color": "",
             "icon_style": "heart",
-            "icon_color": "",
-            "hide_for_guests": false
+            "icon_color": ""
           }
         }
       },
