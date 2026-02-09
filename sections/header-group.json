@@ -120,7 +120,7 @@
             "show_count": true,
             "hide_for_guests": false,
             "target": "menu",
-            "variant": "icon",
+            "variant": "text",
             "link_text": "",
             "badge_color": "",
             "badge_text_color": "",
