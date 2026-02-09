@@ -287,10 +287,7 @@
                 "display_style": "inline",
                 "style_class": "button-unstyled",
                 "show_label": true,
-                "add_label": "Add to list",
-                "remove_label": "Remove from list",
                 "show_when_logged_out": true,
-                "login_label": "Log in to save",
                 "add_icon": "heart",
                 "active_color": "#e53935"
               }
@@ -496,78 +493,10 @@
         "padding-block-start": 48,
         "padding-block-end": 48
       }
-    },
-    "177027813706401306": {
-      "type": "_blocks",
-      "blocks": {
-        "nn_reviews_product_reviews_HQiYKk": {
-          "type": "shopify://apps/nn-reviews/blocks/product-reviews/019a6cea-ecb9-72a3-8e2c-425c60c01f4c",
-          "settings": {
-            "product": "{{product}}",
-            "show_heading": true,
-            "heading": "Customer Reviews",
-            "heading_tag": "h3",
-            "show_badge": true,
-            "badge_show_stars": true,
-            "badge_show_rating": true,
-            "badge_show_count": true,
-            "layout": "list",
-            "card_style": "bordered",
-            "show_sort": true,
-            "default_sort": "newest",
-            "show_pagination": true,
-            "reviews_per_page": 10,
-            "body_max_lines": 4,
-            "show_author": true,
-            "show_date": true,
-            "show_verified": true,
-            "show_merchant_reply": true,
-            "merchant_reply_label": "Response from store:",
-            "no_reviews_text": "No reviews yet. Be the first to review this product!",
-            "show_form": true,
-            "form_button_text": "Write a Review",
-            "form_heading": "Write a Review",
-            "form_show_description": true,
-            "form_description": "Share your experience with this product",
-            "star_color": "#ffc107"
-          }
-        }
-      },
-      "block_order": [
-        "nn_reviews_product_reviews_HQiYKk"
-      ],
-      "settings": {
-        "content_direction": "column",
-        "vertical_on_mobile": true,
-        "horizontal_alignment": "flex-start",
-        "vertical_alignment": "center",
-        "align_baseline": false,
-        "horizontal_alignment_flex_direction_column": "flex-start",
-        "vertical_alignment_flex_direction_column": "center",
-        "gap": 12,
-        "section_width": "page-width",
-        "section_height": "",
-        "section_height_custom": 50,
-        "color_scheme": "",
-        "background_media": "none",
-        "video_position": "cover",
-        "background_image_position": "cover",
-        "border": "none",
-        "border_width": 1,
-        "border_opacity": 100,
-        "border_radius": 0,
-        "toggle_overlay": false,
-        "overlay_color": "#00000026",
-        "overlay_style": "solid",
-        "gradient_direction": "to top",
-        "padding-block-start": 0,
-        "padding-block-end": 0
-      }
     }
   },
   "order": [
     "main",
-    "product_recommendations_qggXJq",
-    "177027813706401306"
+    "product_recommendations_qggXJq"
   ]
 }
