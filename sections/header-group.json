@@ -120,7 +120,7 @@
             "show_count": true,
             "hide_for_guests": false,
             "variant": "text",
-            "target": "header-actions",
+            "target": "menu",
             "link_text": "",
             "badge_color": "",
             "badge_text_color": "",
