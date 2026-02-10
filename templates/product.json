@@ -283,12 +283,11 @@
               "type": "shopify://apps/nn-favorites/blocks/toggle-button/019b0dbf-b4a8-7f29-9f26-3c82f286fb59",
               "settings": {
                 "product": "{{product}}",
-                "list_type": "favorites",
+                "list_type": "b2b-list-1",
                 "display_style": "inline",
                 "style_class": "button-unstyled",
                 "show_label": true,
                 "show_when_logged_out": true,
-                "add_icon": "heart",
                 "active_color": "#e53935"
               }
             },
