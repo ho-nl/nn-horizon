@@ -181,8 +181,20 @@
               },
               "blocks": {}
             },
+            "nn_pricing_product_price_j8RjB6": {
+              "type": "shopify://apps/nn-pricing/blocks/product-price/019bb68d-ee18-7228-a8ed-c0e243b60314",
+              "settings": {
+                "product": "{{closest.product}}",
+                "show_compare_price": true,
+                "show_unit_price": false,
+                "show_volume_note": true,
+                "show_volume_info": true,
+                "show_volume_label": false
+              }
+            },
             "price_EzJzMm": {
               "type": "price",
+              "disabled": true,
               "settings": {
                 "show_sale_price_first": true,
                 "show_installments": false,
@@ -221,6 +233,7 @@
           "block_order": [
             "card-gallery",
             "product_title_4nY4eT",
+            "nn_pricing_product_price_j8RjB6",
             "price_EzJzMm",
             "swatches"
           ]
