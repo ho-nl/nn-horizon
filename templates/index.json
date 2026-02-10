@@ -254,38 +254,12 @@
                 "padding-inline-end": 0
               },
               "blocks": {}
-            },
-            "nn_reviews_rating_badge_7bwGpc": {
-              "type": "shopify://apps/nn-reviews/blocks/rating-badge/019a6cea-ecb9-72a3-8e2c-425c60c01f4c",
-              "settings": {
-                "product": "{{closest.product}}",
-                "hide_when_empty": false,
-                "show_stars": true,
-                "show_rating_value": true,
-                "show_count": true,
-                "star_color": "#ffc107"
-              }
-            },
-            "nn_favorites_toggle_button_abeGB4": {
-              "type": "shopify://apps/nn-favorites/blocks/toggle-button/019b0dbf-b4a8-7f29-9f26-3c82f286fb59",
-              "settings": {
-                "product": "{{closest.product}}",
-                "list_type": "b2b-list",
-                "display_style": "inline",
-                "style_class": "button-unstyled",
-                "show_label": true,
-                "show_when_logged_out": true,
-                "add_icon": "heart",
-                "active_color": "#e53935"
-              }
             }
           },
           "block_order": [
             "product_card_gallery_677WP3",
             "product_title_YXxMTj",
-            "price_JQzVV4",
-            "nn_reviews_rating_badge_7bwGpc",
-            "nn_favorites_toggle_button_abeGB4"
+            "price_JQzVV4"
           ]
         }
       },
