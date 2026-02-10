@@ -274,10 +274,7 @@
                 "display_style": "inline",
                 "style_class": "button-unstyled",
                 "show_label": true,
-                "add_label": "Add to list",
-                "remove_label": "Remove from list",
                 "show_when_logged_out": true,
-                "login_label": "Log in to save",
                 "add_icon": "heart",
                 "active_color": "#e53935"
               }
