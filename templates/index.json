@@ -254,12 +254,24 @@
                 "padding-inline-end": 0
               },
               "blocks": {}
+            },
+            "nn_pricing_product_price_Jjq8Ve": {
+              "type": "shopify://apps/nn-pricing/blocks/product-price/019bb68d-ee18-7228-a8ed-c0e243b60314",
+              "settings": {
+                "product": "{{closest.product}}",
+                "show_compare_price": true,
+                "show_unit_price": false,
+                "show_volume_note": true,
+                "show_volume_info": true,
+                "show_volume_label": false
+              }
             }
           },
           "block_order": [
             "product_card_gallery_677WP3",
             "product_title_YXxMTj",
-            "price_JQzVV4"
+            "price_JQzVV4",
+            "nn_pricing_product_price_Jjq8Ve"
           ]
         }
       },
