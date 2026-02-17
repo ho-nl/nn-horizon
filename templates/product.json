@@ -174,19 +174,17 @@
                     "padding-inline-end": 0
                   },
                   "blocks": {
-                    "nn_pricing_product_price_i37cQb": {
+                    "nn_pricing_product_price_ErfKam": {
                       "type": "shopify://apps/nn-pricing/blocks/product-price/019bb68d-ee18-7228-a8ed-c0e243b60314",
                       "settings": {
                         "product": "{{closest.product}}",
                         "show_compare_price": true,
-                        "show_unit_price": true,
-                        "show_volume_note": true,
-                        "show_volume_info": true,
-                        "show_volume_label": true
+                        "show_volume_pricing": true
                       }
                     },
                     "price_6XQ7Ek": {
                       "type": "price",
+                      "disabled": true,
                       "settings": {
                         "show_sale_price_first": true,
                         "show_installments": false,
@@ -220,7 +218,7 @@
                     }
                   },
                   "block_order": [
-                    "nn_pricing_product_price_i37cQb",
+                    "nn_pricing_product_price_ErfKam",
                     "price_6XQ7Ek",
                     "nn_reviews_rating_badge_U9hF6V"
                   ]
