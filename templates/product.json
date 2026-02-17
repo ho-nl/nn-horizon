@@ -179,7 +179,8 @@
                       "settings": {
                         "product": "{{closest.product}}",
                         "show_compare_price": true,
-                        "show_volume_pricing": true
+                        "show_volume_pricing": true,
+                        "show_starting_price": true
                       }
                     },
                     "nn_reviews_rating_badge_iFXmV7": {
