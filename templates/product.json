@@ -178,9 +178,9 @@
                       "type": "shopify://apps/nn-pricing/blocks/product-price/019bb68d-ee18-7228-a8ed-c0e243b60314",
                       "settings": {
                         "product": "{{closest.product}}",
+                        "price_mode": "dynamic",
                         "show_compare_price": true,
-                        "show_volume_pricing": true,
-                        "show_from_price": true
+                        "show_volume_pricing": true
                       }
                     },
                     "nn_reviews_rating_badge_iFXmV7": {
