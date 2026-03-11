@@ -262,18 +262,12 @@
         "nn_favorites_collection_guard_kM4rNk": {
           "type": "shopify://apps/nn-favorites/blocks/collection-guard/019b0dbf-b4a8-7f29-9f26-3c82f286fb59",
           "settings": {
+            "list_type": "favorites-3",
             "title": "Login Required",
             "message": "Please log in to view your product list.",
             "button_text": "Log In",
             "show_icon": true,
-            "background_color": "#f3f4f6",
-            "border_color": "#e5e7eb",
-            "text_color": "#374151",
-            "icon_color": "#6b7280",
-            "button_color": "#111827",
-            "button_text_color": "#ffffff",
-            "padding": 32,
-            "border_radius": 8
+            "button_style": "button"
           }
         }
       },
