@@ -7,7 +7,7 @@
  * made to this file may be overwritten.
  * ------------------------------------------------------------
  */
- {
+{
   "sections": {
     "search": {
       "type": "search-header",
@@ -138,13 +138,22 @@
               },
               "blocks": {}
             },
+            "nn_pricing_product_price_XekJnR": {
+              "type": "shopify://apps/nn-pricing/blocks/product-price/019bb68d-ee18-7228-a8ed-c0e243b60314",
+              "settings": {
+                "product": "{{closest.product}}",
+                "price_mode": "dynamic",
+                "show_compare_price": true,
+                "show_volume_pricing": false
+              }
+            },
             "price_fYkUgG": {
               "type": "price",
               "name": "t:names.product_price",
               "settings": {
                 "show_sale_price_first": true,
                 "show_installments": false,
-                "show_tax_info": false,
+                "show_tax_info": true,
                 "type_preset": "h6",
                 "width": "100%",
                 "alignment": "left",
@@ -165,6 +174,7 @@
           "block_order": [
             "product_card_gallery_cFExAi",
             "product_title_j7qXTx",
+            "nn_pricing_product_price_XekJnR",
             "price_fYkUgG"
           ]
         }
@@ -173,6 +183,8 @@
         "layout_type": "grid",
         "product_card_size": "medium",
         "mobile_product_card_size": "small",
+        "enable_infinite_scroll": true,
+        "products_per_page": 24,
         "product_grid_width": "centered",
         "full_width_on_mobile": true,
         "columns_gap_horizontal": 16,
