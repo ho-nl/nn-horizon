@@ -144,7 +144,15 @@
                 "product": "{{closest.product}}",
                 "price_mode": "dynamic",
                 "show_compare_price": true,
-                "show_volume_pricing": false
+                "show_sale_price_first": true,
+                "show_volume_pricing": true,
+                "show_installments": false,
+                "width": "100%",
+                "alignment": "left",
+                "padding_top": 0,
+                "padding_bottom": 0,
+                "padding_left": 0,
+                "padding_right": 0
               }
             },
             "price_fYkUgG": {
