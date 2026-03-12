@@ -142,9 +142,10 @@
               "type": "shopify://apps/nn-pricing/blocks/product-price/019bb68d-ee18-7228-a8ed-c0e243b60314",
               "settings": {
                 "product": "{{closest.product}}",
-                "price_mode": "dynamic",
+                "price_mode": "catalog",
                 "show_compare_price": true,
                 "show_sale_price_first": false,
+                "show_unit_price": true,
                 "show_volume_pricing": true,
                 "show_installments": false,
                 "width": "100%",
