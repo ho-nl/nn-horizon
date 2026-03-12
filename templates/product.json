@@ -142,7 +142,7 @@
                     "show_compare_price": true,
                     "show_sale_price_first": false,
                     "show_unit_price": false,
-                    "show_volume_pricing": false,
+                    "show_volume_pricing": true,
                     "show_installments": false,
                     "width": "100%",
                     "alignment": "left",
