@@ -138,7 +138,7 @@
                   "type": "shopify://apps/nn-pricing/blocks/product-price/019bb68d-ee18-7228-a8ed-c0e243b60314",
                   "settings": {
                     "product": "{{closest.product}}",
-                    "price_mode": "from",
+                    "price_mode": "catalog",
                     "show_compare_price": true,
                     "show_sale_price_first": true,
                     "show_unit_price": true,
