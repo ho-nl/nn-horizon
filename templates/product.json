@@ -179,9 +179,9 @@
                       "settings": {
                         "product": "{{closest.product}}",
                         "price_mode": "dynamic",
-                        "show_compare_price": true,
+                        "show_compare_price": false,
                         "show_sale_price_first": true,
-                        "show_volume_pricing": true,
+                        "show_volume_pricing": false,
                         "show_installments": false,
                         "width": "100%",
                         "alignment": "left",
