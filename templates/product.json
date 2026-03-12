@@ -178,11 +178,17 @@
                       "type": "shopify://apps/nn-pricing/blocks/product-price/019bb68d-ee18-7228-a8ed-c0e243b60314",
                       "settings": {
                         "product": "{{closest.product}}",
-                        "show_compare_price": false,
-                        "show_unit_price": false,
-                        "show_volume_note": true,
-                        "show_volume_info": true,
-                        "show_volume_label": false
+                        "price_mode": "dynamic",
+                        "show_compare_price": true,
+                        "show_sale_price_first": true,
+                        "show_volume_pricing": true,
+                        "show_installments": false,
+                        "width": "100%",
+                        "alignment": "left",
+                        "padding_top": 0,
+                        "padding_bottom": 0,
+                        "padding_left": 0,
+                        "padding_right": 0
                       }
                     },
                     "nn_reviews_rating_badge_iFXmV7": {
