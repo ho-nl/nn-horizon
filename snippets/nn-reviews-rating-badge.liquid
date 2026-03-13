@@ -21,13 +21,22 @@
 {% assign rating = rating | default: 0 %}
 {% assign count = count | default: 0 %}
 
+{% comment %} Round rating display when it's a whole number (e.g., 5.0 → 5) {% endcomment %}
+{% assign rating_floor = rating | floor %}
+{% assign rating_diff = rating | minus: rating_floor %}
+{% if rating_diff == 0 %}
+  {% assign rating_display = rating_floor %}
+{% else %}
+  {% assign rating_display = rating %}
+{% endif %}
+
 {% if count > 0 or hide_when_empty == false %}
   <span class="nn-reviews-rating-badge {{ preset }}"
     >{%- if show_stars == true -%}
       {%- render 'nn-reviews-rating-stars', rating: rating, scale_max: scale_max, star_color: star_color -%}
     {%- endif -%}
     {%- if show_rating_value == true and count > 0 %} <span class="nn-reviews-rating-badge__value"
-        >{{- rating -}}<span class="nn-reviews-rating-badge__max">/{{ scale_max }}</span></span
+        >{{- rating_display -}}<span class="nn-reviews-rating-badge__max">/{{ scale_max }}</span></span
       >
     {%- endif -%}
     {%- if show_count == true %} <span class="nn-reviews-rating-badge__count"

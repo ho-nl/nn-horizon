@@ -1,14 +1,17 @@
 {%- doc -%}
   NN Favorites Header Icon - Horizon Theme Integration
   
-  Renders a favorites icon in the header that integrates with Horizon's design patterns.
+  Renders a favorites icon or link in the header that integrates with Horizon's design patterns.
+  Uses the collections list metafield structure with list_type_ref filtering.
 
-  @param {string} label - Aria label for logged-in users (required)
-  @param {string} login_label - Aria label for guests (required)
-  @param {string} list_type - The list type identifier (required)
-  @param {string} icon_asset - Icon asset filename. Examples: 'nn-favorites-icon-heart.svg', 'nn-favorites-icon-star.svg', 'nn-favorites-icon-bookmark.svg (required).'
-  @param {boolean} show_count - Show item count badge (required)
-  @param {boolean} hide_for_guests - Hide the icon for guests (required)
+  @param {string} list_type - The list type handle (required)
+  @param {string} [label] - Aria label for logged-in users (default: list type display name)
+  @param {string} [login_label] - Aria label for guests (default: 'Log in to save favorites')
+  @param {boolean} [show_count] - Show item count badge/text (default: true)
+  @param {boolean} [hide_for_guests] - Hide the icon for guests (default: false)
+  @param {string} [customer_tag] - Only show for customers with this tag (default: blank = no restriction)
+  @param {string} [variant] - Display style: 'icon' or 'text' (default: 'icon')
+  @param {string} [link_text] - Text for text variant (default: label)
   @param {string} [tag] - The tag to use for guests (default: 'a', or 'button' if popover_id is set)
   @param {string} [popover_id] - The id of a popover to target for guests
   @param {string} [popover_action] - The popover action: 'toggle', 'show', or 'hide' (default: 'toggle')
@@ -16,39 +19,88 @@
 
   @example
     {% render 'nn-favorites-header-icon',
-      label: 'Favorites',
-      login_label: 'Log in to save favorites',
       list_type: 'favorites',
-      icon_asset: 'nn-favorites-icon-heart.svg',
-      show_count: true,
-      hide_for_guests: false
+      show_count: true
     %}
 {%- enddoc -%}
 
 {%- liquid
+  # App namespace - use resolved namespace for theme compatibility
+  assign app_namespace = 'app--302942060545--favorites'
+
+  # Customer tag restriction: hide if customer doesn't have the required tag
+  if customer_tag != blank and customer != blank
+    assign customer_has_tag = false
+    for tag in customer.tags
+      if tag == customer_tag
+        assign customer_has_tag = true
+        break
+      endif
+    endfor
+    unless customer_has_tag
+      break
+    endunless
+  endif
+
+  # Hide if tag is required but customer is a guest
+  if customer_tag != blank and customer == blank
+    break
+  endif
+
   # Early exit if hiding for guests and no customer
   if hide_for_guests and customer == blank
     break
   endif
-  
-  # Normalize list type for metafield key
-  assign safe_list_type = list_type | replace: '-', '_'
-  assign metafield_key = 'product_list_' | append: safe_list_type
-  
-  # Get customer's collection and item count
-  # App-owned metafields - use resolved namespace for regular themes (replace YOUR_APP_ID with actual numeric app ID)
-  assign customer_collection = customer.metafields['app--302942060545--favorites'][metafield_key].value
+
+  # Defaults
+  assign variant = variant | default: 'icon'
+  assign show_count = show_count | default: true
+
+  # Find customer's collection for this list type from the collections list
+  assign customer_collection = null
+  assign list_type_display_name = null
+  assign customer_collections = customer.metafields[app_namespace].collections.value
+
+  if customer_collections
+    for collection in customer_collections
+      assign collection_list_type = collection.metafields[app_namespace].list_type_ref.value
+      if collection_list_type and collection_list_type.system.handle == list_type
+        assign customer_collection = collection
+        assign list_type_display_name = collection_list_type.display_name.value
+        break
+      endif
+    endfor
+  endif
+
+  # Fallback label
+  assign default_label = list_type_display_name | default: list_type | capitalize
+  assign label = label | default: default_label
+  assign login_label = login_label | default: 'Log in to save favorites'
+  assign link_text = link_text | default: label
+
+  # Get item count and product IDs
   assign item_count = 0
+  assign product_ids = ''
 
   if customer_collection
     assign item_count = customer_collection.products_count | default: customer_collection.all_products_count | default: 0
-    # Use collection title for aria-label when available
     assign collection_label = customer_collection.title
+
+    # Collect all product IDs from the collection (max 250 per page)
+    paginate collections[customer_collection.handle].products by 250
+      for p in collections[customer_collection.handle].products
+        if product_ids == ''
+          assign product_ids = p.id
+        else
+          assign product_ids = product_ids | append: ',' | append: p.id
+        endif
+      endfor
+    endpaginate
   endif
 
   # Aria label: collection title takes precedence, then label param
   assign aria_label = collection_label | default: label
-  
+
   # Tag defaults - use button if popover_id is set, otherwise default to 'a'
   if popover_id
     assign tag = tag | default: 'button'
@@ -58,199 +110,213 @@
 -%}
 
 <nn-favorites-header-icon
-  class="nn-favorites-header-icon{% unless customer_collection == blank or item_count == 0 %} nn-favorites-header-icon--has-items{% endunless %}"
+  class="nn-favorites-header-icon nn-favorites-header-icon--{{ variant }}{% unless customer_collection == blank or item_count == 0 %} nn-favorites-header-icon--has-items{% endunless %}{% if item_count == 0 or item_count >= 100 %} nn-favorites-header-icon--empty-count{% endif %}"
   data-list-type="{{ list_type }}"
+  data-variant="{{ variant }}"
+  data-collection-json="{{ customer_collection | json | escape }}"
+  data-product-ids="{{ product_ids }}"
 >
-  {%- if customer -%}
-    <a
-      href="{% if customer_collection %}{{ customer_collection.url }}{% else %}#{% endif %}"
-      class="nn-favorites-header-icon__action header-actions__action"
-      aria-label="{{ aria_label }}"
-      aria-describedby="nn-favorites-bubble-text-{{ list_type }}"
-      ref="link"
-    >
-      <span class="svg-wrapper" aria-hidden="true">
-        {{- icon_asset | inline_asset_content -}}
-      </span>
-
-      {%- if show_count -%}
-        {%- render 'nn-favorites-bubble', 
-          item_count: item_count, 
-          list_type: list_type,
-          live_region: true 
-        -%}
-      {%- endif -%}
-    </a>
-  {%- else -%}
-    <{{ tag }}
-      {%- if tag == 'a' %}
+  {%- if variant == 'text' -%}
+    {%- comment -%} Text link variant {%- endcomment -%}
+    {%- if customer -%}
+      <a
+        href="{% if customer_collection %}{{ customer_collection.url }}{% else %}#{% endif %}"
+        class="nn-favorites-header-icon__text-link"
+        ref="link"
+      >
+        <span ref="linkText" class="nn-favorites-header-icon__text-label">{{ link_text }}</span>
+        {%- if show_count -%}
+          <span ref="linkCount" class="nn-favorites-header-icon__text-count{% if item_count == 0 %} visually-hidden{% endif %}">
+            (<span ref="badgeCount">{{ item_count }}</span>)
+          </span>
+        {%- endif -%}
+      </a>
+    {%- else -%}
+      <a
         href="{{ routes.account_login_url }}?return_url={{ request.path | url_encode }}"
-      {%- endif %}
-      class="nn-favorites-header-icon__action header-actions__action"
-      aria-label="{{ login_label }}"
-      {%- if popover_id %}
-        aria-haspopup="dialog"
-        popovertarget="{{ popover_id }}"
-        popovertargetaction="{{ popover_action | default: 'toggle' }}"
-        ref="trigger"
-      {%- endif %}
-      {{ attributes }}
-    >
-      <span class="svg-wrapper" aria-hidden="true">
-        {{- icon_asset | inline_asset_content -}}
-      </span>
-    </{{ tag }}>
+        class="nn-favorites-header-icon__text-link"
+      >
+        <span class="nn-favorites-header-icon__text-label">{{ link_text }}</span>
+      </a>
+    {%- endif -%}
+  {%- else -%}
+    {%- comment -%} Icon variant (default) {%- endcomment -%}
+    {%- if customer -%}
+      <a
+        href="{% if customer_collection %}{{ customer_collection.url }}{% else %}#{% endif %}"
+        class="nn-favorites-header-icon__link header-actions__action"
+        aria-label="{{ aria_label }}"
+        ref="link"
+      >
+        <span class="nn-favorites-header-icon__icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M12 4L20 8.00004L12 12L4 8.00004L12 4Z"/>
+            <path d="M20 12L12 16L4 12"/>
+            <path d="M20 16L12 20L4 16"/>
+          </svg>
+        </span>
+
+        {%- if show_count -%}
+          <span ref="badge" class="nn-favorites-header-icon__badge{% if item_count == 0 %} visually-hidden{% endif %}">
+            <span class="nn-favorites-header-icon__badge-bg"></span>
+            <span ref="badgeCount" class="nn-favorites-header-icon__badge-count" aria-hidden="true">
+              {%- if item_count > 0 and item_count < 100 -%}{{ item_count }}{%- endif -%}
+            </span>
+            <span class="visually-hidden">
+              {{- item_count }} {{ item_count | pluralize: 'item', 'items' -}}
+            </span>
+          </span>
+        {%- endif -%}
+      </a>
+    {%- else -%}
+      <{{ tag }}
+        {%- if tag == 'a' %}
+          href="{{ routes.account_login_url }}?return_url={{ request.path | url_encode }}"
+        {%- endif %}
+        class="nn-favorites-header-icon__link header-actions__action"
+        aria-label="{{ login_label }}"
+        {%- if popover_id %}
+          aria-haspopup="dialog"
+          popovertarget="{{ popover_id }}"
+          popovertargetaction="{{ popover_action | default: 'toggle' }}"
+          ref="trigger"
+        {%- endif %}
+        {{ attributes }}
+      >
+        <span class="nn-favorites-header-icon__icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M12 4L20 8.00004L12 12L4 8.00004L12 4Z"/>
+            <path d="M20 12L12 16L4 12"/>
+            <path d="M20 16L12 20L4 16"/>
+          </svg>
+        </span>
+      </{{ tag }}>
+    {%- endif -%}
   {%- endif -%}
 </nn-favorites-header-icon>
 
 {% stylesheet %}
-  /* NN Favorites Header Icon - Horizon Integration */
   nn-favorites-header-icon {
-    /* Bubble positioning variables - matches cart-icon pattern */
-    --nn-favorites-bubble-size: 20px;
-    --nn-favorites-bubble-top: 4.5px;
-    --nn-favorites-bubble-right: 2.5px;
+    --nn-favorites-badge-size: 20px;
+    --nn-favorites-badge-top: 4.5px;
+    --nn-favorites-badge-right: 2.5px;
 
     display: contents;
   }
 
-  .nn-favorites-header-icon__action {
+  .nn-favorites-header-icon__link {
     --button-color: var(--color-foreground);
 
-    color: var(--color-foreground);
-    appearance: none;
-    border: none;
-    background: none;
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: var(--gap-2xs);
     position: relative;
-  }
-
-  .nn-favorites-header-icon__action .svg-wrapper {
+    color: var(--color-foreground);
+    text-decoration: none;
     height: var(--button-size);
     width: var(--button-size);
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 
-  .nn-favorites-header-icon__action svg {
+  .nn-favorites-header-icon__icon {
+    color: currentColor;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .nn-favorites-header-icon__icon svg {
     width: var(--icon-size-md);
     height: var(--icon-size-md);
   }
 
-  /* Bubble positioning - mirrors cart bubble */
-  .nn-favorites-header-icon__action .nn-favorites-bubble {
+  .nn-favorites-header-icon__badge {
     position: absolute;
-    width: var(--nn-favorites-bubble-size, 20px);
-    top: var(--nn-favorites-bubble-top);
-    right: var(--nn-favorites-bubble-right);
+    top: var(--nn-favorites-badge-top);
+    right: var(--nn-favorites-badge-right);
+    width: var(--nn-favorites-badge-size);
+    height: var(--nn-favorites-badge-size);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
   }
 
-  .nn-favorites-header-icon__action .nn-favorites-bubble__text {
+  .nn-favorites-header-icon__badge-bg {
+    position: absolute;
+    inset: 0;
+    background: var(--color-primary-button-background);
+    border-radius: 50%;
+  }
+
+  .nn-favorites-header-icon__badge-count {
+    position: relative;
+    z-index: var(--layer-flat, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-family: var(--font-paragraph--family);
     font-weight: var(--font-paragraph--weight);
+    font-size: var(--font-size--3xs);
+    line-height: normal;
+    color: var(--color-primary-button-text);
   }
 
-  /* Icon mask when bubble is present - matches cart icon pattern */
-  .nn-favorites-header-icon--has-items .nn-favorites-header-icon__action svg {
+  /* Icon mask when badge is present */
+  .nn-favorites-header-icon--has-items .nn-favorites-header-icon__icon svg {
     mask: radial-gradient(
-      calc(var(--nn-favorites-bubble-size) + 2px) at calc(100% - var(--nn-favorites-bubble-right)) var(--nn-favorites-bubble-top),
+      calc(var(--nn-favorites-badge-size) + 2px) at
+        calc(100% - var(--nn-favorites-badge-right))
+        var(--nn-favorites-badge-top),
       transparent 45.45%,
       #fff 45.45%,
       #fff 100%
     );
   }
 
-  /* Dot indicator when count is empty but has items */
-  nn-favorites-header-icon:has(.nn-favorites-bubble__text-count:empty) {
-    --nn-favorites-bubble-size: 10px;
-    --nn-favorites-bubble-top: 9px;
-    --nn-favorites-bubble-right: 9px;
+  /* Dot indicator when count >= 100 */
+  .nn-favorites-header-icon--empty-count.nn-favorites-header-icon--has-items {
+    --nn-favorites-badge-size: 10px;
+    --nn-favorites-badge-top: 9px;
+    --nn-favorites-badge-right: 9px;
+  }
 
-    .svg-wrapper {
-      --nn-favorites-bubble-top: 4px;
-      --nn-favorites-bubble-right: 4px;
-    }
+  .nn-favorites-header-icon--empty-count.nn-favorites-header-icon--has-items .nn-favorites-header-icon__icon {
+    --nn-favorites-badge-top: 4px;
+    --nn-favorites-badge-right: 4px;
+  }
+
+  /* Text link variant */
+  .nn-favorites-header-icon__text-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25em;
+    color: inherit;
+    text-decoration: none;
+    font: inherit;
+    white-space: nowrap;
+  }
+
+  .nn-favorites-header-icon__text-link:hover {
+    text-decoration: underline;
+  }
+
+  /* Menu placement styles */
+  .menu-list > nn-favorites-header-icon {
+    display: flex;
+    align-items: center;
+    margin-left: var(--menu-list-gap, var(--spacing-6, 1.5rem));
+  }
+
+  .menu-list > nn-favorites-header-icon .nn-favorites-header-icon__text-link {
+    font-family: var(--menu-top-level-font-family, inherit);
+    font-size: var(--menu-top-level-font-size, inherit);
+    font-weight: var(--menu-top-level-font-weight, inherit);
+    color: var(--menu-top-level-font-color, inherit);
+  }
+
+  /* Text variant - no icon masking */
+  .nn-favorites-header-icon--text.nn-favorites-header-icon--has-items .nn-favorites-header-icon__icon svg {
+    mask: none;
   }
 {% endstylesheet %}
-
-{% javascript %}
-  class NnFavoritesHeaderIcon extends HTMLElement {
-    #link = null;
-
-    get bubble() {
-      // Always query fresh to avoid stale references after DOM updates
-      return this.querySelector('[ref="bubble"]');
-    }
-
-    get bubbleCount() {
-      // Always query fresh to avoid stale references after DOM updates
-      return this.querySelector('[ref="bubbleCount"]');
-    }
-
-    get link() {
-      if (!this.#link) {
-        this.#link = this.querySelector('[ref="link"]');
-      }
-      return this.#link;
-    }
-
-    get currentCount() {
-      const text = this.bubbleCount?.textContent?.trim() || '0';
-      return parseInt(text, 10) || 0;
-    }
-
-    set currentCount(value) {
-      if (!this.bubbleCount) return;
-      
-      const count = Math.max(0, Math.floor(value));
-      this.bubbleCount.textContent = count > 0 && count < 100 ? String(count) : '';
-    }
-
-    get listType() {
-      return this.dataset.listType || 'favorites';
-    }
-
-    connectedCallback() {
-      document.addEventListener('nn:list-toggle', this.handleListToggle);
-    }
-
-    disconnectedCallback() {
-      document.removeEventListener('nn:list-toggle', this.handleListToggle);
-      this.#link = null;
-    }
-
-    handleListToggle = (event) => {
-      const { listType, inList, collectionHandle } = event.detail;
-
-      if (listType !== this.listType) return;
-
-      const delta = inList ? 1 : -1;
-      const newCount = Math.max(0, this.currentCount + delta);
-      
-      this.updateBubble(newCount);
-
-      // Update the link href if we have a collection handle and the link is currently "#"
-      if (collectionHandle && this.link && this.link.getAttribute('href') === '#') {
-        this.link.setAttribute('href', `/collections/${collectionHandle}`);
-      }
-    };
-
-    updateBubble(count) {
-      this.currentCount = count;
-      
-      // Toggle visibility classes
-      this.bubble?.classList.toggle('visually-hidden', count === 0);
-      this.bubbleCount?.classList.toggle('hidden', count === 0);
-      this.classList.toggle('nn-favorites-header-icon--has-items', count > 0);
-    }
-  }
-
-  if (!customElements.get('nn-favorites-header-icon')) {
-    customElements.define('nn-favorites-header-icon', NnFavoritesHeaderIcon);
-  }
-{% endjavascript %}

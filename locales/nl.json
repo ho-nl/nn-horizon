@@ -328,5 +328,29 @@
       "default_title": "Standaardtitel",
       "sticky_add_to_cart": "Balk voor snel toevoegen aan winkelwagen"
     }
+  },
+  "nn_reviews": {
+    "review_form": {
+      "rating_label": "Beoordeling",
+      "title_label": "Titel",
+      "title_placeholder": "Geef je beoordeling een titel",
+      "body_label": "Beoordeling",
+      "body_placeholder": "Schrijf hier je beoordeling...",
+      "author_label": "Naam",
+      "author_placeholder": "Jouw naam",
+      "email_label": "E-mail",
+      "email_placeholder": "jan@voorbeeld.nl",
+      "submit_text": "Beoordeling verzenden",
+      "submitting_text": "Verzenden...",
+      "success_message": "Bedankt voor je beoordeling!",
+      "error_message": "Er is iets misgegaan. Probeer het opnieuw."
+    },
+    "sort": {
+      "label": "Sorteer op",
+      "newest": "Nieuwste eerst",
+      "oldest": "Oudste eerst",
+      "highest_rating": "Hoogste beoordeling",
+      "lowest_rating": "Laagste beoordeling"
+    }
   }
 }

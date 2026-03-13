@@ -355,5 +355,29 @@
       "default_title": "Default Title",
       "sticky_add_to_cart": "Quick add to cart bar"
     }
+  },
+  "nn_reviews": {
+    "review_form": {
+      "rating_label": "Rating",
+      "title_label": "Title",
+      "title_placeholder": "Give your review a title",
+      "body_label": "Review",
+      "body_placeholder": "Write your review here...",
+      "author_label": "Name",
+      "author_placeholder": "Your name",
+      "email_label": "Email",
+      "email_placeholder": "your@email.com",
+      "submit_text": "Submit Review",
+      "submitting_text": "Submitting...",
+      "success_message": "Thank you for your review!",
+      "error_message": "Something went wrong. Please try again."
+    },
+    "sort": {
+      "label": "Sort by",
+      "newest": "Newest first",
+      "oldest": "Oldest first",
+      "highest_rating": "Highest rating",
+      "lowest_rating": "Lowest rating"
+    }
   }
 }

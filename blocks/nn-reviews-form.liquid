@@ -74,7 +74,7 @@
             <!-- Rating Field -->
             <div class="nn-review-form__field">
               <label for="rating-{{ block.id }}" class="nn-review-form__label">
-                Rating
+                {{ 'nn_reviews.review_form.rating_label' | t }}
                 <span class="nn-review-form__required">*</span>
               </label>
               <div class="nn-review-form__rating" style="--star-color: {{ block.settings.star_color }};">
@@ -102,7 +102,7 @@
             <!-- Title Field -->
             <div class="nn-review-form__field">
               <label for="title-{{ block.id }}" class="nn-review-form__label">
-                Title
+                {{ 'nn_reviews.review_form.title_label' | t }}
                 <span class="nn-review-form__required">*</span>
               </label>
               <input
@@ -110,7 +110,7 @@
                 id="title-{{ block.id }}"
                 name="title"
                 class="nn-review-form__input"
-                placeholder="Give your review a title"
+                placeholder="{{ 'nn_reviews.review_form.title_placeholder' | t }}"
                 maxlength="100"
                 required
                 data-title
@@ -120,14 +120,14 @@
             <!-- Review Body -->
             <div class="nn-review-form__field">
               <label for="body-{{ block.id }}" class="nn-review-form__label">
-                Review
+                {{ 'nn_reviews.review_form.body_label' | t }}
                 <span class="nn-review-form__required">*</span>
               </label>
               <textarea
                 id="body-{{ block.id }}"
                 name="body"
                 class="nn-review-form__textarea"
-                placeholder="Write your review here..."
+                placeholder="{{ 'nn_reviews.review_form.body_placeholder' | t }}"
                 required
                 minlength="10"
                 rows="5"
@@ -139,7 +139,7 @@
             {% unless customer %}
               <div class="nn-review-form__field">
                 <label for="author-{{ block.id }}" class="nn-review-form__label">
-                  Name
+                  {{ 'nn_reviews.review_form.author_label' | t }}
                   <span class="nn-review-form__required">*</span>
                 </label>
                 <input
@@ -147,7 +147,7 @@
                   id="author-{{ block.id }}"
                   name="author"
                   class="nn-review-form__input"
-                  placeholder="Your name"
+                  placeholder="{{ 'nn_reviews.review_form.author_placeholder' | t }}"
                   required
                   data-author
                 >
@@ -156,7 +156,7 @@
               <!-- Author Email -->
               <div class="nn-review-form__field">
                 <label for="email-{{ block.id }}" class="nn-review-form__label">
-                  Email
+                  {{ 'nn_reviews.review_form.email_label' | t }}
                   <span class="nn-review-form__required">*</span>
                 </label>
                 <input
@@ -164,7 +164,7 @@
                   id="email-{{ block.id }}"
                   name="email"
                   class="nn-review-form__input"
-                  placeholder="your@email.com"
+                  placeholder="{{ 'nn_reviews.review_form.email_placeholder' | t }}"
                   required
                   data-email
                 >
@@ -177,8 +177,12 @@
                 type="submit"
                 class="nn-review-form__submit button"
                 data-submit-button
+                data-submit-text="{{ 'nn_reviews.review_form.submit_text' | t }}"
+                data-submitting-text="{{ 'nn_reviews.review_form.submitting_text' | t }}"
+                data-success-message="{{ 'nn_reviews.review_form.success_message' | t }}"
+                data-error-message="{{ 'nn_reviews.review_form.error_message' | t }}"
               >
-                Submit Review
+                {{ 'nn_reviews.review_form.submit_text' | t }}
               </button>
             </div>
 
@@ -209,6 +213,13 @@
       this.submitButton = this.form.querySelector('[data-submit-button]');
       this.messageEl = this.form.querySelector('[data-message]');
       this.variantIdInput = this.form.querySelector('[data-variant-id]');
+
+      this.translations = {
+        submitText: this.submitButton.dataset.submitText,
+        submittingText: this.submitButton.dataset.submittingText,
+        successMessage: this.submitButton.dataset.successMessage,
+        errorMessage: this.submitButton.dataset.errorMessage,
+      };
 
       this.form.addEventListener('submit', this.#handleSubmit.bind(this));
 
@@ -264,7 +275,7 @@
       }
 
       this.submitButton.disabled = true;
-      this.submitButton.textContent = 'Submitting...';
+      this.submitButton.textContent = this.translations.submittingText;
       this.messageEl.hidden = true;
 
       try {
@@ -277,10 +288,9 @@
         const result = await response.json();
 
         if (response.ok && result.success) {
-          this.#showMessage(result.message || 'Thank you for your review!', true);
+          this.#showMessage(result.message || this.translations.successMessage, true);
           this.form.reset();
 
-          // Close dialog after success
           setTimeout(() => {
             const dialogComponent = this.closest('dialog-component');
             if (dialogComponent && typeof dialogComponent.closeDialog === 'function') {
@@ -288,13 +298,13 @@
             }
           }, 2000);
         } else {
-          this.#showMessage(result.error || 'Something went wrong. Please try again.', false);
+          this.#showMessage(result.error || this.translations.errorMessage, false);
         }
       } catch (error) {
-        this.#showMessage('Something went wrong. Please try again.', false);
+        this.#showMessage(this.translations.errorMessage, false);
       } finally {
         this.submitButton.disabled = false;
-        this.submitButton.textContent = 'Submit Review';
+        this.submitButton.textContent = this.translations.submitText;
       }
     }
   }
